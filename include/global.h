@@ -1,0 +1,1 @@
+pros::Controller Controller(pros::E_CONTROLLER_MASTER);
