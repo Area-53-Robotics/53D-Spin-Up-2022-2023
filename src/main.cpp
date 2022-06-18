@@ -1,5 +1,7 @@
 #include "main.h"
 #include "global.h"
+#include "pros/misc.h"
+#include "pros/motors.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -28,6 +30,11 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+
+	BLM.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+	FLM.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+	BRM.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+	FRM.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 }
 
 /**
@@ -76,6 +83,14 @@ void autonomous() {}
  */
 void opcontrol() {
 	while (true) {
+		LYAxis = Controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		RYAxis = Controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+		
+		// Tank Drive
+		BLM.move(LYAxis);
+		FLM.move(LYAxis);
+		BRM.move(RYAxis);
+		FRM.move(RYAxis);
 		pros::delay(20);
 	}
 }
