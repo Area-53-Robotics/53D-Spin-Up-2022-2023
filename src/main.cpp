@@ -1,8 +1,4 @@
 #include "main.h"
-#include "global.h"
-#include "pros/misc.h"
-#include "pros/motors.h"
-#include "pros/rtos.hpp"
 
 /**
  * A callback function for LLEMU's center button.
