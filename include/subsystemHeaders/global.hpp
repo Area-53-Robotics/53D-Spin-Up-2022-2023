@@ -1,32 +1,28 @@
-#include "pros/adi.hpp"
-#include "pros/apix.h"
-#include "pros/motors.h"
-#include "pros/motors.hpp"
-#include "pros/rotation.hpp"
+#include "api.h"
 
 // lv_img_set_src(Logo.c, &Logo.c);
 // lv_img_set_src
 
 pros::Controller Controller(pros::E_CONTROLLER_MASTER);
-pros::Motor BLM(1, pros::E_MOTOR_GEARSET_18, true);
-pros::Motor FLM(2, pros::E_MOTOR_GEARSET_18, true);
-pros::Motor BRM(3, pros::E_MOTOR_GEARSET_18, false);
-pros::Motor FRM(4, pros::E_MOTOR_GEARSET_18, false);
+pros::Motor BLM(6, pros::E_MOTOR_GEARSET_18, false);
+pros::Motor FLM(8, pros::E_MOTOR_GEARSET_18, false);
+pros::Motor BRM(10, pros::E_MOTOR_GEARSET_18, false);
+pros::Motor FRM(9, pros::E_MOTOR_GEARSET_18, false);
 pros::ADIEncoder LEncoder(1, 2, false);
 pros::ADIEncoder REncoder(3, 4, true);
 pros::ADIEncoder MEncoder(5, 6, false);
 
-int LYAxis;
-int RYAxis;
+short int LYAxis;
+short int RYAxis;
 
-int GamePhase = 1;
-int Page = 1;
-int Line = 1;
+unsigned short int GamePhase = 1;
+unsigned short int Page = 1;
+unsigned short int Line = 1;
 
 bool AutonSelecting = false;
 bool MotorChecking = false;
 
-int autonSelect = 5;
+unsigned short int autonSelect = 5;
 /*
     1: Left Quals
     2: Right Quals
