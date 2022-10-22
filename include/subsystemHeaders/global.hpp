@@ -12,9 +12,6 @@ pros::ADIEncoder LEncoder(1, 2, false);
 pros::ADIEncoder REncoder(3, 4, true);
 pros::ADIEncoder MEncoder(5, 6, false);
 
-short int LYAxis;
-short int RYAxis;
-
 unsigned short int GamePhase = 1;
 unsigned short int Page = 1;
 unsigned short int Line = 1;
@@ -23,6 +20,7 @@ bool AutonSelecting = false;
 bool MotorChecking = false;
 
 unsigned short int autonSelect = 5;
+
 /*
     1: Left Quals
     2: Right Quals
@@ -32,6 +30,7 @@ unsigned short int autonSelect = 5;
     6: Programming Skills
 */
 
+/*
 // Function v0
 void CIDisplay() {
     Controller.clear();
@@ -266,3 +265,4 @@ void BPressed() {
         CIDisplay();
     }
 }
+*/

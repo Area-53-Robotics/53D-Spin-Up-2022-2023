@@ -72,8 +72,8 @@ void opcontrol(void);
 #endif
 
 #ifdef __cplusplus
+#include "subsystemHeaders/drive.hpp"
 #include "subsystemHeaders/flywheel.hpp"
-#include "subsystemHeaders/globals.hpp"
 #include "subsystemHeaders/global.hpp"
 #include "subsystemHeaders/intake.hpp"
 #include "subsystemHeaders/odometry.hpp"
