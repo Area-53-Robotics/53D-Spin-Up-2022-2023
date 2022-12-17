@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/rtos.hpp"
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -12,29 +13,47 @@
  * from where it left off.
  */
 void autonomous() {
+	GamePhase = 2;
+	autonSelect = 4;
 	Controller.clear();
 	switch (autonSelect) {
 		case 1:
-			Controller.print(0, 0, "Running Left Quals Auton");
+			Controller.print(0, 0, "Left Quals Auton");
+			drive(0.75, 100);
+			turn('R', 1, 100);
+			drive(0.3, 100);
+			ToggleIntake();
+			pros::delay(50);
+			ToggleIntake();
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 2:
-			Controller.print(0, 0, "Running Right Quals Auton");
+			Controller.print(0, 0, "Right Quals Auton");
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 3:
-			Controller.print(0, 0, "Running Left Elims Auton");
+			Controller.print(0, 0, "Left Elims Auton");
+			ToggleIntake();
+			pros::delay(50);
+			ToggleIntake();
+			drive(-0.75, 100);
+			turn('R', 0.5, 100);
+			drive(0.75, 100);
+			ToggleIntake();
+			pros::delay(50);
+			ToggleIntake();
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 4:
-			Controller.print(0, 0, "Running Right Elims Auton");
+			Controller.print(0, 0, "Right Elims Auton");
+			turn('R', 0.7, 100);
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 5:
 			Controller.print(0, 0, "No Auton Selected");
 			break;
 		case 6:
-			Controller.print(0, 0, "Running Programming Skills");
+			Controller.print(0, 0, "Programming Skills");
 			Controller.print(1, 0, "Skills Complete");
 			break;
 	}

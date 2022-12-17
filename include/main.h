@@ -78,6 +78,7 @@ void opcontrol(void);
 #include "subsystemHeaders/intake.hpp"
 #include "subsystemHeaders/odometry.hpp"
 #include "subsystemHeaders/pid.hpp"
+#include <cmath>
 //#include <iostream>
 #endif
 
