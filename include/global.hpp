@@ -1,7 +1,5 @@
 #include "api.h"
-#include "pros/motors.h"
-#include "pros/motors.hpp"
-#include "pros/rtos.hpp"
+
 // enum class Auton {LeftRed};
 // Auton auton = Auton::LeftRed;
 // #pragma once
@@ -9,7 +7,7 @@
 // lv_img_set_src(Logo.c, &Logo.c);
 // lv_img_set_src
 
-// Dead Ports: 3, 5, 11, 4, 5, 7
+// Dead Ports: 3, 4, 5, 7, 11 
 
 inline pros::Controller Controller(pros::E_CONTROLLER_MASTER);
 inline pros::Motor BLM(2, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_ROTATIONS);
@@ -44,6 +42,15 @@ inline unsigned short int autonSelect = 5;
 
 inline char Direction = 'N';
 inline bool FlywheelSpinning = false;
+
+inline bool AButton = false;
+inline bool BButton = false;
+inline bool UpButton = false;
+inline bool DownButton = false;
+inline bool AButton_old = false;
+inline bool BButton_old = false;
+inline bool UpButton_old = false;
+inline bool DownButton_old = false;
 
 /*
     1: Left Quals
@@ -320,23 +327,23 @@ inline void MotorCheck() {
     Controller.clear();
     pros::delay(50);
     if (Page == 1) {
-        Controller.print(0,0,"BLM: %d °C", BLM.get_temperature());
+        Controller.print(0,0,"BLM: %f °C", BLM.get_temperature());
         pros::delay(50);
-        Controller.print(1,0,"FLM: %d °C", FLM.get_temperature());
+        Controller.print(1,0,"FLM: %f °C", FLM.get_temperature());
         pros::delay(50);
-        Controller.print(2,0,"BRM: %d °C", BRM.get_temperature());
+        Controller.print(2,0,"BRM: %f °C", BRM.get_temperature());
         pros::delay(50);
     } else if (Page == 2) {
-        Controller.print(0,0,"FRM: %d °C", FRM.get_temperature());
+        Controller.print(0,0,"FRM: %f °C", FRM.get_temperature());
         pros::delay(50);
-        Controller.print(1, 0, "Intake: %d °C", IntakeMotor.get_temperature());
+        Controller.print(1, 0, "Intake: %f °C", IntakeMotor.get_temperature());
         pros::delay(50);
-        Controller.print(2, 0, "Indexer: %d °C", IndexerMotor.get_temperature());
+        Controller.print(2, 0, "Indexer: %f °C", IndexerMotor.get_temperature());
         pros::delay(50);
     } else if (Page == 3) {
-        Controller.print(0, 0, "FWM1: %d °C", FlywheelMotor1.get_temperature());
+        Controller.print(0, 0, "FWM1: %f °C", FlywheelMotor1.get_temperature());
         pros::delay(50);
-        Controller.print(1, 0, "FWM2: %d °C", FlywheelMotor2.get_temperature());
+        Controller.print(1, 0, "FWM2: %f °C", FlywheelMotor2.get_temperature());
         pros::delay(50);
     }
 }
@@ -379,18 +386,18 @@ inline void NotesCheck() {
     Controller.clear();
     pros::delay(50);
     if (Page == 1) {
-        Controller.print(0, 0, "Left Auton is ");
+        Controller.print(0, 0, "Left Auton is the");
         pros::delay(50);
-        Controller.print(1, 0, "the only auton");
+        Controller.print(1, 0, "only auton that");
         pros::delay(50);
-        Controller.print(2, 0, "that works    ");
+        Controller.print(2, 0, "works. Oh also the");
         pros::delay(50);
     } else if (Page == 2) {
-        Controller.print(0, 0, "oh also the   ");
+        Controller.print(0, 0, "Left Elims Auton");
         pros::delay(50);
-        Controller.print(1, 0, "Left Elims    ");
+        Controller.print(1, 0, "                    ");
         pros::delay(50);
-        Controller.print(2, 0, "Auton         ");
+        Controller.print(2, 0, "                    ");
         pros::delay(50);
     }
 }
@@ -523,5 +530,6 @@ inline void ToggleIntake() {
 
 inline void Expansion() {
     ExpansionMotor.move_absolute(90, 600);
+    Controller.rumble(".");
 }
 // */

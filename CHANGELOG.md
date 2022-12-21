@@ -1,3 +1,11 @@
+v1.0.1 (12/20/22)
+- Switched program icon to an Alien
+- Moved global.hpp out of subsystemHeaders
+- Slight change to input curving for increased precision
+- Fixed motor temperature check
+- Expansion can now only activate when 15 seconds are left in the Driver Control Period
+- Controller rumbles when activating expansion
+----------------------------------------------------------------------------------------------------------------------------------
 v1.0.0 (12/17/22) - Capital Beltway Challenge
 - Added input curving to the motor
 - Merged competition_initialize.cpp back into main.cpp

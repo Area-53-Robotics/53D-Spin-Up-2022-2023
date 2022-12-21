@@ -1,7 +1,7 @@
 #include "main.h"
 
 float getMotorOutput(int i) {
-    return i*exp((float)((abs(i)-100)*60)/1000);
+    return i*exp((double)((abs(i)-100)*60)/1000);
 }
 
 void DirectionToggle() {

@@ -21,40 +21,31 @@ void opcontrol() {
 	Controller.rumble(".");
 	bool XButton;
 	bool YButton;
-	bool AButton;
 	bool XButton_old;
 	bool YButton_old;
-	bool AButton_old;
+
+	double matchTimer = 90;
 
 	while (true) {
 
-		/*
-		if(Controller.get_digital_new_press(DIGITAL_DOWN)) DownPressed();
-		if(Controller.get_digital_new_press(DIGITAL_UP)) UpPressed();
-		if(Controller.get_digital_new_press(DIGITAL_A)) APressed();
-		if(Controller.get_digital_new_press(DIGITAL_B)) BPressed();
-
-		pros::screen::print(pros::E_TEXT_MEDIUM, 1, "AutonSelecting: %d", AutonSelecting);
-		pros::screen::print(pros::E_TEXT_MEDIUM, 2, "MotorChecking: %d", MotorChecking);
-		pros::screen::print(pros::E_TEXT_MEDIUM, 3, "Page: %d", Page);
-		pros::screen::print(pros::E_TEXT_MEDIUM, 4, "Line: %d", Line);
-		*/	
+		// competition_initialize();
+		// autonomous();
 
 		XButton = Controller.get_digital(DIGITAL_X);
 		YButton = Controller.get_digital(DIGITAL_Y);
 		AButton = Controller.get_digital(DIGITAL_A);
 
 		setDriveMotors();
-		// 2.375
-		// learned a lesson, spent yesterday unscrewing the drivetrain to fix a lock when it was just a nut interfering
 		
 		if (XButton && !XButton_old) DirectionToggle();
 		if (YButton && !YButton_old) ToggleIntake();
-		if (AButton && !AButton_old) Expansion();
+		if (AButton && !AButton_old && matchTimer < 15) Expansion();
 
 		XButton_old = XButton;
 		YButton_old = YButton;
 		AButton_old = AButton;
+
+		matchTimer -= 0.20;
 
 		pros::delay(20);
 
