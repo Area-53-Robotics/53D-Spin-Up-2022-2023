@@ -1,4 +1,7 @@
 #include "api.h"
+#include "pros/motors.h"
+#include "competition_initialize.hpp"
+#include "pros/rtos.hpp"
 
 // enum class Auton {LeftRed};
 // Auton auton = Auton::LeftRed;
@@ -7,59 +10,40 @@
 // lv_img_set_src(Logo.c, &Logo.c);
 // lv_img_set_src
 
-// Dead Ports: 3, 4, 5, 7, 11 
+// Dead Ports: 3, 4, 5, 7, 11, 12, 19
 
 inline pros::Controller Controller(pros::E_CONTROLLER_MASTER);
-inline pros::Motor BLM(2, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_ROTATIONS);
+inline pros::Motor BLM(10, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_ROTATIONS);
 inline pros::Motor FLM(20, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_ROTATIONS);
-inline pros::Motor BRM(1, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_ROTATIONS);
-inline pros::Motor FRM(12, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_ROTATIONS);
-inline pros::Motor IntakeMotor(6, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_DEGREES);
-inline pros::Motor ExpansionMotor(8, pros::E_MOTOR_GEARSET_06, true);
-inline pros::Motor IndexerMotor(17, pros::E_MOTOR_GEARSET_18, false);
-inline pros::Motor FlywheelMotor1(19, pros::E_MOTOR_GEARSET_18, false);
-inline pros::Motor FlywheelMotor2(18, pros::E_MOTOR_GEARSET_18, false);
-inline pros::ADIEncoder LEncoder(1, 2, false);
-inline pros::ADIEncoder REncoder(3, 4, true);
-inline pros::ADIEncoder MEncoder(5, 6, false);
+inline pros::Motor BRM(2, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_ROTATIONS);
+inline pros::Motor FRM(1, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_ROTATIONS);
+inline pros::Motor IntakeMotor(16, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
+inline pros::Motor IndexerMotor(13, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
+inline pros::Motor FlywheelMotor1(6, pros::E_MOTOR_GEARSET_06, false);
+inline pros::Motor FlywheelMotor2(18, pros::E_MOTOR_GEARSET_06, false);
 
 inline short int LYAxis;
 inline short int RYAxis;
 
 inline bool UpdatingController = false;
-extern bool intake;
 
 inline unsigned short int GamePhase = 1;
-inline unsigned short int Page = 1;
-inline unsigned short int Line = 1;
- 
-inline bool AutonSelecting = false;
-inline bool MotorChecking = false;
-inline bool KeybindChecking = false;
-inline bool NotesChecking = false;
 
-inline unsigned short int autonSelect = 5;
-
-inline char Direction = 'N';
-inline bool FlywheelSpinning = false;
-
-inline bool AButton = false;
-inline bool BButton = false;
-inline bool UpButton = false;
-inline bool DownButton = false;
-inline bool AButton_old = false;
-inline bool BButton_old = false;
-inline bool UpButton_old = false;
-inline bool DownButton_old = false;
+inline unsigned short int autonSelect = 6;
 
 /*
     1: Left Quals
     2: Right Quals
     3: Left Elims
     4: Right Elims
-    5: No Auton
-    6: Programming Skills
+    5: Full Autonomous Win Point
+    6: No Auton
+    7: Programming Skills
 */
+
+inline char Direction = 'N';
+inline bool FlywheelSpinning = false;
+inline bool intakeOn = false;
 
 // /*
 // Function v0
@@ -73,426 +57,6 @@ inline void ControllerDisplay() {
     pros::delay(50);
     if (FlywheelSpinning) Controller.print(2, 0, "Flywheel: On");
     else if (!FlywheelSpinning) Controller.print(2, 0, "Flywheel: Off");
-}
-
-inline void CIDisplay() {
-    Controller.clear();
-    pros::delay(50);
-    if (!AutonSelecting && !MotorChecking) {
-        if (Line == 1) {
-            Controller.print(0,0,"Pre-Auton Menu");
-            pros::delay(50);
-            Controller.print(1,0,"> Auton Select");
-            pros::delay(50);
-            Controller.print(2,0,"  Motor Check");
-            pros::delay(50);
-        } else if (Line == 2) {
-            Controller.print(0,0,"Pre-Auton Menu");
-            pros::delay(50);
-            Controller.print(1,0,"  Auton Select");
-            pros::delay(50);
-            Controller.print(2,0,"> Motor Check");
-            pros::delay(50);
-        } else if (Line == 3) {
-            Controller.print(0, 0, "> Keybindings");
-            pros::delay(50);
-            Controller.print(1, 0, "  Notes");
-            pros::delay(50);
-        } else if (Line == 4) {
-            Controller.print(0, 0, "  Keybindings");
-            pros::delay(50);
-            Controller.print(1, 0, "> Notes");
-        }
-    }
-
-}
-
-inline void AutonSelect() {
-    Controller.clear();
-    pros::delay(50);
-    if (Line == 1) {
-        switch (autonSelect) {
-            case 1:
-                Controller.print(0, 0, "> X Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, "    Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, "    Left Elims");
-                pros::delay(50);
-                break;
-            case 2:
-                Controller.print(0, 0, ">   Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, "  X Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, "    Left Elims");
-                pros::delay(50);
-                break;
-            case 3:
-                Controller.print(0, 0, ">   Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, "    Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, "  X Left Elims");
-                pros::delay(50);
-                break;
-            default:
-                Controller.print(0, 0, ">   Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, "    Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, "    Left Elims");
-                pros::delay(50);
-                break;
-        }
-    } else if (Line == 2) {
-        switch (autonSelect) {
-            case 1:
-                Controller.print(0, 0, "  X Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, ">   Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, "    Left Elims");
-                pros::delay(50);
-                break;
-            case 2:
-                Controller.print(0, 0, "    Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, "> X Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, "    Left Elims");
-                pros::delay(50);
-                break;
-            case 3:
-                Controller.print(0, 0, "    Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, ">   Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, "  X Left Elims");
-                pros::delay(50);
-                break;
-            default:
-                Controller.print(0, 0, "    Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, ">   Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, "    Left Elims");
-                pros::delay(50);
-                break;
-        }
-    } else if (Line == 3) {
-        switch (autonSelect) {
-            case 1:
-                Controller.print(0, 0, "  X Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, "    Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, ">   Left Elims");
-                pros::delay(50);
-                break;
-            case 2:
-                Controller.print(0, 0, "    Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, "  X Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, ">   Left Elims");
-                pros::delay(50);
-                break;
-            case 3:
-                Controller.print(0, 0, "    Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, "    Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, "> X Left Elims");
-                pros::delay(50);
-                break;
-            default:
-                Controller.print(0, 0, "    Left Quals");
-                pros::delay(50);
-                Controller.print(1, 0, "    Right Quals");
-                pros::delay(50);
-                Controller.print(2, 0, ">   Left Elims");
-                pros::delay(50);
-                break;
-        }
-    } else if (Line == 4) {
-        switch (autonSelect) {
-            case 4:
-                Controller.print(0, 0, "> X Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, "    No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, "    P-Skills");
-                pros::delay(50);
-                break;
-            case 5:
-                Controller.print(0, 0, ">   Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, "  X No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, "    P-Skills");
-                pros::delay(50);
-                break;
-            case 6:
-                Controller.print(0, 0, ">   Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, "    No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, "  X P-Skills");
-                pros::delay(50);
-                break;
-            default:
-                Controller.print(0, 0, ">   Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, "    No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, "    P-Skills");
-                pros::delay(50);
-                break;
-        }
-    } else if (Line == 5) {
-        switch (autonSelect) {
-            case 4:
-                Controller.print(0, 0, "  X Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, ">   No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, "    P-Skills");
-                pros::delay(50);
-                break;
-            case 5:
-                Controller.print(0, 0, "    Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, "> X No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, "    P-Skills");
-                pros::delay(50);
-                break;
-            case 6:
-                Controller.print(0, 0, "    Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, ">   No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, "  X P-Skills");
-                pros::delay(50);
-                break;
-            default:
-                Controller.print(0, 0, "    Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, ">   No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, "    P-Skills");
-                pros::delay(50);
-                break;
-        }
-    } else if (Line == 6) {
-        switch (autonSelect) {
-            case 4:
-                Controller.print(0, 0, "  X Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, "    No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, ">   P-Skills");
-                pros::delay(50);
-                break;
-            case 5:
-                Controller.print(0, 0, "    Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, "  X No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, ">   P-Skills");
-                pros::delay(50);
-                break;
-            case 6:
-                Controller.print(0, 0, "    Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, "    No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, "> X P-Skills");
-                pros::delay(50);
-                break;
-            default:
-                Controller.print(0, 0, "    Right Elims");
-                pros::delay(50);
-                Controller.print(1, 0, "    No Auton");
-                pros::delay(50);
-                Controller.print(2, 0, ">   P-Skills");
-                pros::delay(50);
-                break;
-        }
-    }
-}
-
-inline void MotorCheck() {
-    Controller.clear();
-    pros::delay(50);
-    if (Page == 1) {
-        Controller.print(0,0,"BLM: %f °C", BLM.get_temperature());
-        pros::delay(50);
-        Controller.print(1,0,"FLM: %f °C", FLM.get_temperature());
-        pros::delay(50);
-        Controller.print(2,0,"BRM: %f °C", BRM.get_temperature());
-        pros::delay(50);
-    } else if (Page == 2) {
-        Controller.print(0,0,"FRM: %f °C", FRM.get_temperature());
-        pros::delay(50);
-        Controller.print(1, 0, "Intake: %f °C", IntakeMotor.get_temperature());
-        pros::delay(50);
-        Controller.print(2, 0, "Indexer: %f °C", IndexerMotor.get_temperature());
-        pros::delay(50);
-    } else if (Page == 3) {
-        Controller.print(0, 0, "FWM1: %f °C", FlywheelMotor1.get_temperature());
-        pros::delay(50);
-        Controller.print(1, 0, "FWM2: %f °C", FlywheelMotor2.get_temperature());
-        pros::delay(50);
-    }
-}
-
-inline void KeybindCheck() {
-    Controller.clear();
-    pros::delay(50);
-    if (Page == 1) {
-        Controller.print(0, 0, "X: Reverse");
-        pros::delay(50);
-        Controller.print(1, 0, "Y: Roller");
-        pros::delay(50);
-        Controller.print(2, 0, "A: Expansion");
-        pros::delay(50);
-    } else if (Page == 2) {
-        Controller.print(0, 0, "B: (N/A)");
-        pros::delay(50);
-        Controller.print(1, 0, "Up: (N/A)");
-        pros::delay(50);
-        Controller.print(2, 0, "Down: (N/A)");
-        pros::delay(50);
-    } else if (Page == 3) {
-        Controller.print(0, 0, "Left: (N/A)");
-        pros::delay(50);
-        Controller.print(1, 0, "Right: (N/A)");
-        pros::delay(50);
-        Controller.print(2, 0, "L1: (N/A)");
-        pros::delay(50);
-    } else if (Page == 4) {
-        Controller.print(0, 0, "L2: (N/A)");
-        pros::delay(50);
-        Controller.print(1, 0, "R1: (N/A)");
-        pros::delay(50);
-        Controller.print(2, 0, "R2: (N/A)");
-        pros::delay(50);
-    }
-}
-
-inline void NotesCheck() {
-    Controller.clear();
-    pros::delay(50);
-    if (Page == 1) {
-        Controller.print(0, 0, "Left Auton is the");
-        pros::delay(50);
-        Controller.print(1, 0, "only auton that");
-        pros::delay(50);
-        Controller.print(2, 0, "works. Oh also the");
-        pros::delay(50);
-    } else if (Page == 2) {
-        Controller.print(0, 0, "Left Elims Auton");
-        pros::delay(50);
-        Controller.print(1, 0, "                    ");
-        pros::delay(50);
-        Controller.print(2, 0, "                    ");
-        pros::delay(50);
-    }
-}
-
-// Button-Pressed Functions
-inline void DownPressed() {
-    if (GamePhase == 1 && !AutonSelecting && !MotorChecking && !KeybindChecking && !NotesChecking && (Line < 4)) {
-        Line++;
-        CIDisplay();
-    } else if (GamePhase == 1 && AutonSelecting && !MotorChecking && !KeybindChecking && !NotesChecking && (Line < 7)) {
-        Line++;
-        AutonSelect();
-    } else if (GamePhase == 1 && !AutonSelecting && MotorChecking && !KeybindChecking && !NotesChecking && (Page < 3)) {
-        Page++;
-        MotorCheck();
-    } else if (GamePhase == 1 && !AutonSelecting && !MotorChecking && KeybindChecking && !NotesChecking && (Page < 4)) {
-        Page++;
-        KeybindCheck();
-    } else if (GamePhase == 1 && !AutonSelecting && !MotorChecking && !KeybindChecking && NotesChecking && (Page < 2)) {
-        Page++;
-        NotesCheck();
-    }
-}
-
-inline void UpPressed() {
-    if (GamePhase == 1 && !AutonSelecting && !MotorChecking && !KeybindChecking && !NotesChecking && (Line > 1)) {
-        Line--;
-        CIDisplay();
-    } else if (GamePhase == 1 && AutonSelecting && !MotorChecking && !KeybindChecking && !NotesChecking && (Line > 1)) {
-        Line--;
-        AutonSelect();
-    } else if (GamePhase == 1 && !AutonSelecting && MotorChecking && !KeybindChecking && !NotesChecking && (Page > 1)) {
-        Page--;
-        MotorCheck();
-    } else if (GamePhase == 1 && !AutonSelecting && !MotorChecking && KeybindChecking && !NotesChecking && (Page > 1)) {
-        Page--;
-        KeybindCheck();
-    } else if (GamePhase == 1 && !AutonSelecting && !MotorChecking && !KeybindChecking && NotesChecking && (Page > 1)) {
-        Page--;
-        NotesCheck();
-    }
-}
-
-inline void APressed() {
-    if (GamePhase == 1 && !AutonSelecting && !MotorChecking && !KeybindChecking && !NotesChecking) {
-        if (Line == 1) {
-            AutonSelecting = true;
-            Line = autonSelect;
-            AutonSelect();
-        } else if (Line == 2) {
-            MotorChecking = true;
-            Page = 1;
-            MotorCheck();
-        } else if (Line == 3) {
-            KeybindChecking = true;
-            Page = 1;
-            KeybindCheck();
-        } else if (Line == 4) {
-            NotesChecking = true;
-            Page = 1;
-            NotesCheck();
-        }
-    } else if (GamePhase == 1 && AutonSelecting && !MotorChecking && !KeybindChecking && !NotesChecking) {
-        switch (Line) {
-            case 1: autonSelect = 1; break;
-            case 2: autonSelect = 2; break;
-            case 3: autonSelect = 3; break;
-            case 4: autonSelect = 4; break;
-            case 5: autonSelect = 5; break;
-            case 6: autonSelect = 6; break;
-        }
-        AutonSelect();
-    }
-}
-
-inline void BPressed() {
-    if (GamePhase == 1) {
-        if (AutonSelecting) {
-            AutonSelecting = false;
-            Line = 2;
-            CIDisplay();
-        } else if (MotorChecking) {
-            MotorChecking = false;
-            Line = 3;
-            CIDisplay();
-        } else if (KeybindChecking) {
-            KeybindChecking = false;
-            Line = 4;
-            CIDisplay();
-        } else if (NotesChecking) {
-            NotesChecking = false;
-            Line = 1;
-            CIDisplay();
-        }
-    }
 }
 
 inline void drive(double length, int percent) {
@@ -516,8 +80,6 @@ inline void turn(char direction, double length, int percent) {
     }
 }
 
-inline bool intakeOn = false;
-
 inline void ToggleIntake() {
     if (!intakeOn) {
         IntakeMotor.move(127); // Max: 127
@@ -528,8 +90,38 @@ inline void ToggleIntake() {
     intakeOn = !intakeOn;
 }
 
+inline void ToggleFlywheel(int velocity) {
+    if (!FlywheelSpinning) {
+        FlywheelSpinning = true;
+        FlywheelMotor1.move_velocity(velocity);
+        FlywheelMotor2.move_velocity(velocity);
+    } else if (FlywheelSpinning) {
+        FlywheelMotor1.brake();
+        FlywheelMotor2.brake();
+        FlywheelSpinning = false;
+    }
+}
+
+inline void Indexer() {
+    IndexerMotor.move_absolute(45.0, 200);
+    while (!((IndexerMotor.get_position() < 50) && (IndexerMotor.get_position() > 40))) {
+        pros::delay(2);
+    }
+    IndexerMotor.move_absolute(0.0, 200);
+    while (!((IndexerMotor.get_position() < 5) && (IndexerMotor.get_position() > -5))) {
+        pros::delay(2);
+    }
+}
+
 inline void Expansion() {
-    ExpansionMotor.move_absolute(90, 600);
+    IndexerMotor.move_absolute(130.0, 200);
+    while (!((IndexerMotor.get_position() < 50) && (IndexerMotor.get_position() > 40))) {
+        pros::delay(2);
+    }
     Controller.rumble(".");
+    pros::delay(50);
+    Controller.clear();
+    pros::delay(50);
+    Controller.print(0, 0, "Expanded");
 }
 // */

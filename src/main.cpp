@@ -25,9 +25,11 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+	pros::lcd::set_text(1, "Hello 53D!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+
+	sylib::initialize();
 }
 
 /**
@@ -36,35 +38,3 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {}
-
-/**
- * Runs after initialize(), and before autonomous when connected to the Field
- * Management System or the VEX Competition Switch. This is intended for
- * competition-specific initialization routines, such as an autonomous selector
- * on the LCD.
- *
- * This task will exit when the robot is enabled and autonomous or opcontrol
- * starts.
- */
-void competition_initialize() {
-	CIDisplay();
-	IntakeMotor.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-	while (true) {
-		DownButton = Controller.get_digital(DIGITAL_DOWN);
-		UpButton = Controller.get_digital(DIGITAL_UP);
-		AButton = Controller.get_digital(DIGITAL_A);
-		BButton = Controller.get_digital(DIGITAL_B);
-
-		if(DownButton && !DownButton_old) DownPressed();
-		if(UpButton && !UpButton_old) UpPressed();
-		if(AButton && !AButton_old) APressed();
-		if(BButton && !BButton_old) BPressed();
-
-		DownButton_old = DownButton;
-		UpButton_old = UpButton;
-		AButton_old = AButton;
-		BButton_old = BButton;
-
-		pros::delay(20);
-	}
-}

@@ -35,6 +35,7 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
+#include "sylib/sylib.hpp"
 
 /**
  * You should add more #includes here
@@ -73,11 +74,10 @@ void opcontrol(void);
 
 #ifdef __cplusplus
 #include "subsystemHeaders/drive.hpp"
-#include "subsystemHeaders/flywheel.hpp"
 #include "global.hpp"
-#include "subsystemHeaders/intake.hpp"
 #include "subsystemHeaders/odometry.hpp"
 #include "subsystemHeaders/pid.hpp"
+#include "competition_initialize.hpp"
 #include <cmath>
 //#include <iostream>
 #endif

@@ -19,33 +19,19 @@
 void opcontrol() {
 	ControllerDisplay();
 	Controller.rumble(".");
-	bool XButton;
-	bool YButton;
-	bool XButton_old;
-	bool YButton_old;
-
-	double matchTimer = 90;
 
 	while (true) {
 
 		// competition_initialize();
 		// autonomous();
 
-		XButton = Controller.get_digital(DIGITAL_X);
-		YButton = Controller.get_digital(DIGITAL_Y);
-		AButton = Controller.get_digital(DIGITAL_A);
-
 		setDriveMotors();
 		
-		if (XButton && !XButton_old) DirectionToggle();
-		if (YButton && !YButton_old) ToggleIntake();
-		if (AButton && !AButton_old && matchTimer < 15) Expansion();
-
-		XButton_old = XButton;
-		YButton_old = YButton;
-		AButton_old = AButton;
-
-		matchTimer -= 0.20;
+		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) DirectionToggle();
+		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) Expansion();
+		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) Indexer();
+		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) ToggleFlywheel(600);
+		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) ToggleIntake();
 
 		pros::delay(20);
 

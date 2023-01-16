@@ -1,3 +1,16 @@
+v2.0.0 (1/15/23) - "I Have A Dream" Challenge
+- Description for version numbering system added to README.md
+- Functions for indexer and flywheel created
+- Function for expansion adjusted for the new expansion module
+- Started creating odometry & PID functions
+- Created competition_intialize.hpp and competition_intialize.cpp, and moved all pre-auton exclusive functions into those files
+- Removed all button boolean variables
+- Added Full AWP to auton select options
+- Installed sylib
+- Removed flywheel.cpp, intake.cpp, and their respective header files
+- Added delays after indexer movements
+- Untracked cache files
+----------------------------------------------------------------------------------------------------------------------------------
 v1.0.1 (12/20/22)
 - Switched program icon to an Alien
 - Moved global.hpp out of subsystemHeaders

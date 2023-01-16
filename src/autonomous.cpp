@@ -14,7 +14,6 @@
  */
 void autonomous() {
 	GamePhase = 2;
-	autonSelect = 4;
 	Controller.clear();
 	switch (autonSelect) {
 		case 1:
@@ -29,6 +28,17 @@ void autonomous() {
 			break;
 		case 2:
 			Controller.print(0, 0, "Right Quals Auton");
+			ToggleFlywheel(600);
+			pros::delay(500);
+			Indexer();
+			ToggleIntake();
+			pros::delay(350);
+			ToggleIntake();
+			Indexer();
+			pros::delay(50);
+			Indexer();
+			pros::delay(50);
+			Indexer();
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 3:
@@ -50,9 +60,12 @@ void autonomous() {
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 5:
-			Controller.print(0, 0, "No Auton Selected");
+			Controller.print(0, 0, "Full AWP");
 			break;
 		case 6:
+			Controller.print(0, 0, "No Auton Selected");
+			break;
+		case 7:
 			Controller.print(0, 0, "Programming Skills");
 			Controller.print(1, 0, "Skills Complete");
 			break;
