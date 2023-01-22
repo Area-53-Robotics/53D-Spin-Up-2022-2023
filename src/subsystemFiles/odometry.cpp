@@ -1,150 +1,132 @@
 #include "main.h"
-#include "pros/rtos.hpp"
-#include <cmath>
+#include "subsystemHeaders/odometry.hpp"
 
-pros::ADIEncoder LEncoder(1, 2, false);
-pros::ADIEncoder REncoder(3, 4, true);
-pros::ADIEncoder SEncoder(5, 6, false);
+// Radius of the tracking wheels in inches
+const double WHEEL_RADIUS = 1.379;
 
-const double lDist = 7;
-const double rDist = 7;
-const double sDist = 7;
+// Distances of tracking wheels from the tracking center in inches
+const double lDist = 6.8335;
+// const double rDist = 6.8335;
+const double sDist = 5.85;
 
-double currentL = 0, currentR = 0, currentS = 0;
-double deltaL = 0, deltaR = 0, deltaS = 0;
-double lastDeltaL = 0, lastDeltaR = 0, lastDeltaS = 0;
-double deltaLi = 0, deltaRi = 0, deltaSi = 0;
-double totalDeltaLi = 0, totalDeltaRi = 0, totalDeltaSi = 0;
+// Starting angle relative to the field in radians
+const double initOrientation = M_PI;
+
+double currentL = 0;
+// double currentR = 0;
+double currentS = 0;
+
+double deltaL = 0;
+// double deltaR = 0;
+double deltaS = 0;
+
+double lastL = 0;
+// double lastR = 0;
+double lastS = 0;
+
+double totalDeltaL = 0;
+// double totalDeltaR = 0;
+double totalDeltaS = 0;
+
 double deltaTheta = 0;
-double thetaRad = 0, thetaDeg = 0;
-double posX = 0, posY = 0;
 
-double initOrientation = 0;
-double orientation = 0;
-double lastOrientation = 0;
-double avgOrientation = 0;
+double orientation;
+double lastOrientation;
+double avgTheta = orientation + (deltaTheta / 2);
 
-double polarLength = 0;
-double polarTheta = 0;
+double deltaXLocal = 0;
+double deltaYLocal = 0;
 
-double deltaX = 0, deltaY = 0;
+double deltaXGlobal = 0;
+double deltaYGlobal = 0;
+
+double posX = 56.5;
+double posY = 8.5;
+
+double x;
+double goalDist;
+
+// std::ofstream file2;
 
 // Constants
-  const double goalX = 0.5;
-  const double goalY = 15.5;
+  const double goalX = 15.12;
+  const double goalY = 127.92;
 // Constants
 
 // double desiredX = 0, desiredY = 0, desiredOrientation = 0;
 
-bool odomRunning = false;
-
-double sec2(double theta) {
-  return 1 / pow(cos(theta), 2);
-}
+bool odomRunning = false; // Overall odom running
+bool odomActive = false; // Whether odom is on delay or not
 
 void runOdometry() {
   odomRunning = true;
 
-  while(odomRunning) {
+  while(odomRunning) {  
+    odomActive = true;
 
-    // remember to add bearings to the tracking wheels and use screw joints when attaching
-    
     currentL = LEncoder.get_value();
-    currentR = REncoder.get_value();
+    // currentR = REncoder.get_value();
     currentS = SEncoder.get_value();
 
-    deltaL = currentL - lastDeltaL;
-    deltaR = currentR - lastDeltaR;
-    deltaS = currentS - lastDeltaS;
+    deltaL = degToRad(currentL - lastL) * WHEEL_RADIUS;
+    // deltaR = degToRad(currentR - lastR) * WHEEL_RADIUS;
+    deltaS = degToRad(currentS - lastS) * WHEEL_RADIUS;
 
-    deltaLi = deltaL * 1.375;
-    deltaRi = deltaR * 1.375;
-    deltaSi = deltaS * 1.375;
+    lastL = currentL;
+    // lastR = currentR;
+    lastS = currentS;
 
-    totalDeltaLi += deltaLi;
-    totalDeltaRi += deltaRi;
-    totalDeltaSi += deltaSi;
+    totalDeltaL += deltaL;
+    // totalDeltaR += deltaR;
+    totalDeltaS += deltaS;
 
-    orientation = initOrientation + (totalDeltaLi - totalDeltaRi)/(lDist + rDist);
-    thetaRad = orientation - lastOrientation;
-    thetaDeg = thetaRad * 180 / M_PI;
-
-    orientation = initOrientation + thetaRad;
+    // orientation = initOrientation - (totalDeltaL - totalDeltaR)/(lDist + rDist);
+    orientation = degToRad(360 - IMU.get_heading());
     deltaTheta = orientation - lastOrientation;
-
-    deltaY = 2 * ((deltaRi / thetaRad) + rDist) * sin(thetaRad / 2);
-    deltaX = 2 * ((deltaSi / thetaRad) + sDist) * sin(thetaRad / 2);
-
-    avgOrientation = lastOrientation + (deltaTheta / 2);
-
-    polarLength = sqrt(pow(posY, 2) + pow(posX, 2));
-    polarTheta = atan2(posY, posX);
-
-    polarTheta -= avgOrientation;
-    
-    deltaX = polarLength * cos(polarTheta);
-    deltaY = polarLength * sin(polarTheta);
-
-    posY += deltaY;
-    posX += deltaX;
-
-    lastDeltaL = LEncoder.get_value();
-    lastDeltaR = REncoder.get_value();
-    lastDeltaS = SEncoder.get_value();
     lastOrientation = orientation;
+
+    if(deltaTheta == 0) {
+      deltaXLocal = deltaS;
+      deltaYLocal = deltaL;
+    } else {
+      deltaXLocal = 2 * ((deltaS / deltaTheta) + sDist) * sin(deltaTheta / 2);
+      deltaYLocal = 2 * ((deltaL / deltaTheta) - lDist) * sin(deltaTheta / 2);
+    }
+
+    avgTheta = orientation - (deltaTheta / 2);
+
+    deltaXGlobal = (deltaYLocal * cos(avgTheta)) - (deltaXLocal * sin(avgTheta));
+    deltaYGlobal = (deltaYLocal * sin(avgTheta)) + (deltaXLocal * cos(avgTheta));
+
+    while(orientation >= 2 * M_PI) {
+      orientation -= 2 * M_PI;
+    }
+    
+    while(orientation < 0) {
+      orientation += 2 * M_PI;
+    }
+
+    posX += deltaXGlobal;
+    posY += deltaYGlobal;
+
+    goalDist = distFormula(posX, posY, goalX, goalY);
+    x = ((goalDist * 12) - fDist) * 0.0254; // Feet -> Inches -> Meters
+
+    odomActive = false;
 
     pros::delay(10);
   }
 }
 
-double distFormula(double x1, double x2, double y1, double y2) {
-  return sqrt(pow((x2 - x1), 2) + pow((y2-y1), 2));
+void odomKillSwitch() {
+  odomRunning = !odomRunning;
 }
 
-void PIDMove(double desiredX, double desiredY) {
-  double kP = 0;
-  double error = 0;
-  double power = 0;
-  double integral;
-  double kI;
-  double derivative;
-  double prevError;
-  double kD;
-
-  double distDX = desiredX - posX;
-  double distDY = desiredY - posY;
-  double desiredOrientation = atan2(distDY, distDX) + orientation;
-
-  while (error > 10) {
-    error = desiredOrientation - orientation;
-    integral += error;
-    if (error < 0) integral = 0;
-    if (error > 100) integral = 0;
-    derivative = error - prevError;
-    prevError = error;
-    power = error * kP + integral * kI + derivative * kD;
-    
-    BLM.move(power);
-    FLM.move(power);
-    BRM.move(power);
-    FRM.move(power);
-    pros::delay(15);
-  }
-
-  // double desiredDistance = 
-  
-  // double error = 
-}
-
-void PIDTurn(double d) {
-  //
-}
-
-double h = 13;
-double a = M_PI / 4;
-double x = 4.264;
-double y = 0.7408;
+const double fDist = 5;
+const double h = 12; //measured with ruler
+const double a = M_PI / 4;
+const double y = 0.715;
 
 double goalDistance() {
-  return sqrt((-1 * (4.9 * pow(x, 2) * sec2(a))) / (y - (0.0254 * h) - (x * tan(a))));
+  return sqrt((4.9 * pow(x, 2) * sec2(a)) / ((0.0254 * h) + (x * tan(a)) - y));
 }

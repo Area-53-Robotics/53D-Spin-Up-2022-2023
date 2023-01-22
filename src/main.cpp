@@ -1,5 +1,4 @@
 #include "main.h"
-#include "pros/motors.h"
 
 /**
  * A callback function for LLEMU's center button.
@@ -30,6 +29,11 @@ void initialize() {
 	pros::lcd::register_btn1_cb(on_center_button);
 
 	sylib::initialize();
+
+	IMU.reset();
+	
+	// pros::Task Odometry(runOdometry);
+	// pros::Task OdomDataCollection(odomDataCollection);
 }
 
 /**

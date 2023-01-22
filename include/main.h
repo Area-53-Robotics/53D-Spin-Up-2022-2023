@@ -78,7 +78,10 @@ void opcontrol(void);
 #include "subsystemHeaders/odometry.hpp"
 #include "subsystemHeaders/pid.hpp"
 #include "competition_initialize.hpp"
+#include "subsystemHeaders/misc.hpp"
 #include <cmath>
+#include <fstream>
+#include <sstream>
 //#include <iostream>
 #endif
 

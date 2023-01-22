@@ -15,43 +15,97 @@
 void autonomous() {
 	GamePhase = 2;
 	Controller.clear();
+	// autonSelect = 7;
+	std::cout << autonSelect << std::endl;
 	switch (autonSelect) {
 		case 1:
-			Controller.print(0, 0, "Left Quals Auton");
-			drive(0.75, 100);
-			turn('R', 1, 100);
-			drive(0.3, 100);
-			ToggleIntake();
 			pros::delay(50);
+			Controller.print(0, 0, "Ur mom weighs auton");
+			BackwardsIntake();
+			drive(0.1, 50);
+			pros::delay(250);
+			BackwardsIntake();
+			drive(-0.1, 50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			turn('R', 0.75,50);
+			while(!FRM.is_stopped()) pros::delay(2);
 			ToggleIntake();
+			ToggleFlywheel(400);
+			pros::delay(6000);
+			Indexer();
+			pros::delay(2000);
+			Indexer();
+			pros::delay(2000);
+			Indexer();
+			pros::delay(2000);
+			Indexer();
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 2:
 			Controller.print(0, 0, "Right Quals Auton");
-			ToggleFlywheel(600);
+			drive(1,50);
+			pros::delay(1000);
+			turn('R', 0.7,50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			drive(1,50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			turn('R',0.7,50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			drive(1, 50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			ToggleIntake();
 			pros::delay(500);
-			Indexer();
 			ToggleIntake();
-			pros::delay(350);
-			ToggleIntake();
+			// Copied from Left Quals Auton
+			turn('R', 0.8,50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			ToggleFlywheel(475);
+			pros::delay(6000);
 			Indexer();
-			pros::delay(50);
+			pros::delay(2000);
 			Indexer();
-			pros::delay(50);
+			pros::delay(2000);
 			Indexer();
-			Controller.print(1, 0, "Auton Completed");
+			pros::delay(2000);
+			Indexer();
+			// Copied from Left Quals Auton
+			Controller.print(0,0,"Auton Completed");
 			break;
 		case 3:
 			Controller.print(0, 0, "Left Elims Auton");
+			BackwardsIntake();
+			drive(0.1, 50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			// pros::delay(250);
+			BackwardsIntake();
+			drive(-0.1, 50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			turn('R', 0.75,50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			ToggleIntake();
+			pros::delay(500);
+			ToggleFlywheel(400);
+			pros::delay(4000);
+			Indexer();
+			pros::delay(1000);
+			Indexer();
+			pros::delay(1000);
+			Indexer();
+			pros::delay(1000);
+			Indexer();
+			pros::delay(1000);
 			ToggleIntake();
 			pros::delay(50);
-			ToggleIntake();
-			drive(-0.75, 100);
-			turn('R', 0.5, 100);
-			drive(0.75, 100);
-			ToggleIntake();
-			pros::delay(50);
-			ToggleIntake();
+			ToggleFlywheel(400); // actually turns it off
+			pros::delay(1000);
+			turn('L', 0.375, 50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			drive(-0.5, 50);
+			while(!FRM.is_stopped()) pros::delay(2);
+			/*
+			turn('R', 4, 50);
+			// drive(3, 50);
+			*/
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 4:
@@ -66,7 +120,29 @@ void autonomous() {
 			Controller.print(0, 0, "No Auton Selected");
 			break;
 		case 7:
+			pros::delay(50);
 			Controller.print(0, 0, "Programming Skills");
+			drive(0.1,50);
+			BackwardsIntake();
+			pros::delay(500); // originally 500 msec
+			BackwardsIntake();
+			drive(-0.2, 50);
+			pros::delay(1000);
+			turn('R', 0.7,50);
+			pros::delay(1000);
+			drive(3, 50); // big big important
+			pros::delay(1000);
+			turn('R', 0.1, 50);
+			ToggleFlywheel(363); // og 475
+			pros::delay(6000);
+			Indexer();
+			pros::delay(2000);
+			Indexer();
+			pros::delay(2000);
+			Indexer();
+			pros::delay(2000);
+			Indexer();
+			Expansion();
 			Controller.print(1, 0, "Skills Complete");
 			break;
 	}

@@ -1,3 +1,16 @@
+v2.1.0 (1/21/23) - Southern Maryland Showdown
+- Included fstream
+- Reformatted flywheel adjustment algorithm
+- Major fixes to odometry tracking system
+- Created waitUntilMoveAbsolute function for use with the indexer
+- Created misc.cpp & misc.hpp to organize miscellaneous functions
+- Adjusted odometry algorithm to use an inertial sensor instead of a right tracking wheel
+- Created functionality for odometry & values PID values to print to the terminal
+- Updated left autons
+- Finished base PID functions without tuned constants
+- Added ability for the intake to move backwards
+- Driver can now toggle between two flywheel motor velocities: 363 RPM (Enough to shoot a disc from the low goal barrier) and 600 RPM (max speed)
+----------------------------------------------------------------------------------------------------------------------------------
 v2.0.0 (1/15/23) - "I Have A Dream" Challenge
 - Description for version numbering system added to README.md
 - Functions for indexer and flywheel created

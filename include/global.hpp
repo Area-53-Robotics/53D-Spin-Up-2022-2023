@@ -1,7 +1,6 @@
 #include "api.h"
-#include "pros/motors.h"
+#include "pros/misc.hpp"
 #include "competition_initialize.hpp"
-#include "pros/rtos.hpp"
 
 // enum class Auton {LeftRed};
 // Auton auton = Auton::LeftRed;
@@ -13,14 +12,18 @@
 // Dead Ports: 3, 4, 5, 7, 11, 12, 19
 
 inline pros::Controller Controller(pros::E_CONTROLLER_MASTER);
-inline pros::Motor BLM(10, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_ROTATIONS);
-inline pros::Motor FLM(20, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_ROTATIONS);
-inline pros::Motor BRM(2, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_ROTATIONS);
+inline pros::Motor BLM(2, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_ROTATIONS);
+inline pros::Motor FLM(8, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_ROTATIONS);
+inline pros::Motor BRM(10, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_ROTATIONS);
 inline pros::Motor FRM(1, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_ROTATIONS);
-inline pros::Motor IntakeMotor(16, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
+inline pros::Motor IntakeMotor(6, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
 inline pros::Motor IndexerMotor(13, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
-inline pros::Motor FlywheelMotor1(6, pros::E_MOTOR_GEARSET_06, false);
+inline pros::Motor FlywheelMotor1(16, pros::E_MOTOR_GEARSET_06, false);
 inline pros::Motor FlywheelMotor2(18, pros::E_MOTOR_GEARSET_06, false);
+inline pros::Imu IMU(9);
+inline pros::ADIEncoder LEncoder(1, 2, true);
+// inline pros::ADIEncoder REncoder(3, 4, false);
+inline pros::ADIEncoder SEncoder(5, 6, false);
 
 inline short int LYAxis;
 inline short int RYAxis;
@@ -29,7 +32,7 @@ inline bool UpdatingController = false;
 
 inline unsigned short int GamePhase = 1;
 
-inline unsigned short int autonSelect = 6;
+inline unsigned short int autonSelect = 3;
 
 /*
     1: Left Quals
@@ -41,22 +44,35 @@ inline unsigned short int autonSelect = 6;
     7: Programming Skills
 */
 
-inline char Direction = 'N';
+inline bool isReverse = false;
 inline bool FlywheelSpinning = false;
 inline bool intakeOn = false;
+
+inline int FlywheelMotorSpeed = 363;
+
+const double FiywheelRadius = 2.5;
 
 // /*
 // Function v0
 inline void ControllerDisplay() {
     Controller.clear();
     pros::delay(50);
-    Controller.print(0, 0, "Driver Display");
+    if (isReverse == false) Controller.print(0, 0, "Direction: Normal");
+    else if (isReverse == true) Controller.print(0, 0, "Direction: Reverse");
     pros::delay(50);
-    if (Direction == 'N') Controller.print(1, 0, "Direction: Normal");
-    else if (Direction == 'R') Controller.print(1, 0, "Direction: Reverse");
+    if (FlywheelSpinning) Controller.print(1, 0, "Flywheel: On");
+    else if (!FlywheelSpinning) Controller.print(1, 0, "Flywheel: Off");
     pros::delay(50);
-    if (FlywheelSpinning) Controller.print(2, 0, "Flywheel: On");
-    else if (!FlywheelSpinning) Controller.print(2, 0, "Flywheel: Off");
+    Controller.print(2, 0, "FlySpeed = %d", FlywheelMotorSpeed);
+}
+
+inline void waitUntilMoveAbsolute(pros::Motor Motor, double position, int velocity) {
+    int count = 1;
+    Motor.move_absolute(position, velocity);
+    while (!((Motor.get_position() < (position + 5)) && (Motor.get_position() > (position - 5))) && count < 100) {
+        count++;
+        pros::delay(2);
+    }
 }
 
 inline void drive(double length, int percent) {
@@ -82,7 +98,17 @@ inline void turn(char direction, double length, int percent) {
 
 inline void ToggleIntake() {
     if (!intakeOn) {
-        IntakeMotor.move(127); // Max: 127
+        IntakeMotor.move(127);
+    }
+    else if (intakeOn) {
+        IntakeMotor.brake();
+    }
+    intakeOn = !intakeOn;
+}
+
+inline void BackwardsIntake() {
+    if (!intakeOn) {
+        IntakeMotor.move_velocity(-200);
     }
     else if (intakeOn) {
         IntakeMotor.brake();
@@ -95,33 +121,62 @@ inline void ToggleFlywheel(int velocity) {
         FlywheelSpinning = true;
         FlywheelMotor1.move_velocity(velocity);
         FlywheelMotor2.move_velocity(velocity);
+        /*
+        FlywheelMotor1.move_velocity(FlywheelMotorSpeed);
+        FlywheelMotor2.move_velocity(FlywheelMotorSpeed);
+        */
     } else if (FlywheelSpinning) {
         FlywheelMotor1.brake();
         FlywheelMotor2.brake();
         FlywheelSpinning = false;
     }
+    ControllerDisplay();
+}
+
+inline void ToggleFlywheelSpeed() {
+    if (FlywheelMotorSpeed == 363) FlywheelMotorSpeed = 600;
+    else if (FlywheelMotorSpeed == 600) FlywheelMotorSpeed = 363;
+    ControllerDisplay();
 }
 
 inline void Indexer() {
-    IndexerMotor.move_absolute(45.0, 200);
-    while (!((IndexerMotor.get_position() < 50) && (IndexerMotor.get_position() > 40))) {
-        pros::delay(2);
-    }
-    IndexerMotor.move_absolute(0.0, 200);
-    while (!((IndexerMotor.get_position() < 5) && (IndexerMotor.get_position() > -5))) {
-        pros::delay(2);
-    }
+    waitUntilMoveAbsolute(IndexerMotor, 55, 200);
+    waitUntilMoveAbsolute(IndexerMotor, 0, 200);
 }
 
 inline void Expansion() {
-    IndexerMotor.move_absolute(130.0, 200);
-    while (!((IndexerMotor.get_position() < 50) && (IndexerMotor.get_position() > 40))) {
-        pros::delay(2);
-    }
+    waitUntilMoveAbsolute(IndexerMotor, 150, 200);
+    // IndexerMotor.move_absolute(130.0, 200);
     Controller.rumble(".");
     pros::delay(50);
     Controller.clear();
     pros::delay(50);
     Controller.print(0, 0, "Expanded");
+}
+
+inline void SpinRoller() {
+    ToggleIntake();
+    pros::delay(333);
+    ToggleIntake();
+}
+
+inline void FlySpeedInc100() {
+    FlywheelMotorSpeed += 100;
+    ControllerDisplay();
+}
+
+inline void FlySpeedDec100() {
+    FlywheelMotorSpeed -= 100;
+    ControllerDisplay();
+}
+
+inline void FlySpeedInc10() {
+    FlywheelMotorSpeed += 10;
+    ControllerDisplay();
+}
+
+inline void FlySpeedDec10() {
+    FlywheelMotorSpeed -= 10;
+    ControllerDisplay();
 }
 // */

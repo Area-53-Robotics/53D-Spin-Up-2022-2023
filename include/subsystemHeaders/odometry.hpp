@@ -1,31 +1,52 @@
 #include "api.h"
 
-extern pros::ADIEncoder LEncoder;
-extern pros::ADIEncoder REncoder;
-extern pros::ADIEncoder SEncoder;
+// Radius of the tracking wheels in inches
+extern const double WHEEL_RADIUS;
 
+// Distances of tracking wheels from the tracking center in inches
 extern const double lDist;
-extern const double rDist;
+// extern const double rDist;
 extern const double sDist;
 
-extern double currentL, currentR, currentS;
-extern double deltaL, deltaR, deltaS;
-extern double lastDeltaL, lastDeltaR, lastDeltaS;
-extern double deltaLi, deltaRi, deltaSi;
-extern double totalDeltaLi, totalDeltaRi, totalDeltaSi;
-extern double deltaTheta;
-extern double thetaRad, thetaDeg;
-extern double posX, posY;
+// Starting angle relative to the field in radians
+extern const double initOrientation;
 
-extern double initOrientation;
+extern const double X_START;
+extern const double Y_START;
+
+extern double currentL;
+// extern double currentR;
+extern double currentS;
+
+extern double deltaL;
+// extern double deltaR;
+extern double deltaS;
+
+extern double lastL;
+// extern double lastR;
+extern double lastS;
+
+extern double totalDeltaL;
+// extern double totalDeltaR;
+extern double totalDeltaS;
+
+extern double deltaTheta;
+
 extern double orientation;
 extern double lastOrientation;
-extern double avgOrientation;
+extern double avgTheta;
 
-extern double polarLength;
-extern double polarTheta;
+extern double deltaXLocal;
+extern double deltaYLocal;
 
-extern double deltaX, deltaY;
+extern double deltaXGlobal;
+extern double deltaYGlobal;
+
+extern double posX;
+extern double posY;
+
+extern double x;
+extern double goalDist;
 
 // Constants
   extern const double goalX;
@@ -33,20 +54,15 @@ extern double deltaX, deltaY;
 // Constants
 
 extern bool odomRunning;
-
-extern double sec2();
+extern bool odomActive;
 
 extern void runOdometry();
 
-extern double distFormula();
+extern void odomKillSwitch();
 
-void PIDMove();
+extern const double fDist;
+extern const double h;
+extern const double a;
+extern const double y;
 
-void PIDTurn();
-
-extern double h;
-extern double a;
-extern double x;
-extern double y;
-
-double goalDistance();
+extern double goalDistance();

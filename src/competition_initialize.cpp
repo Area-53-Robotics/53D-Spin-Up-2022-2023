@@ -300,7 +300,7 @@ void KeybindCheck() {
         pros::delay(50);
         Controller.print(1, 0, "Y: (N/A)");
         pros::delay(50);
-        Controller.print(2, 0, "A: (N/A)");
+        Controller.print(2, 0, "A: Toggle Flywheel Speed");
         pros::delay(50);
     } else if (Page == 2) {
         Controller.print(0, 0, "B: Expansion");
@@ -314,10 +314,10 @@ void KeybindCheck() {
         pros::delay(50);
         Controller.print(1, 0, "Right: (N/A)");
         pros::delay(50);
-        Controller.print(2, 0, "L1: Intake");
+        Controller.print(2, 0, "L1: Backwards Intake");
         pros::delay(50);
     } else if (Page == 4) {
-        Controller.print(0, 0, "L2: (N/A)");
+        Controller.print(0, 0, "L2: Intake");
         pros::delay(50);
         Controller.print(1, 0, "R1: Indexer");
         pros::delay(50);
@@ -330,19 +330,21 @@ void NotesCheck() {
     Controller.clear();
     pros::delay(50);
     if (Page == 1) {
-        Controller.print(0, 0, "Left Auton is the");
+        Controller.print(0, 0, "- Check the indexer ");
         pros::delay(50);
-        Controller.print(1, 0, "only auton that");
+        Controller.print(1, 0, "position             ");
+        Controller.print(0, 0, "");
         pros::delay(50);
-        Controller.print(2, 0, "works. Oh also the");
+        Controller.print(1, 0, "");
+        pros::delay(50);
+        Controller.print(2, 0, "");
         pros::delay(50);
     } else if (Page == 2) {
-        Controller.print(0, 0, "Left Elims Auton");
+        Controller.print(0, 0, "");
         pros::delay(50);
-        Controller.print(1, 0, "                    ");
+        Controller.print(1, 0, "");
         pros::delay(50);
-        Controller.print(2, 0, "                    ");
-        pros::delay(50);
+        Controller.print(2, 0, "");
     }
 }
 
@@ -406,14 +408,59 @@ inline void APressed() {
         }
     } else if (GamePhase == 1 && AutonSelecting && !MotorChecking && !KeybindChecking && !NotesChecking) {
         switch (Line) {
-            case 1: autonSelect = 1; break;
-            case 2: autonSelect = 2; break;
-            case 3: autonSelect = 3; break;
-            case 4: autonSelect = 4; break;
-            case 5: autonSelect = 5; break;
-            case 6: autonSelect = 6; break;
-            case 7: autonSelect = 7; break;
+            case 1:
+                // Left Quals
+                autonSelect = 1;
+                posX = 16;
+                posY = 9;
+                IMU.set_heading(-90);
+                break;
+            case 2:
+                // Right Quals
+                autonSelect = 2;
+                posX = 135;
+                posY = 138;
+                IMU.set_heading(-180);
+                break;
+            case 3:
+                // Left Elims
+                autonSelect = 3;
+                posX = 16;
+                posY = 9;
+                IMU.set_heading(-90);
+                break;
+            case 4:
+                // Right Elims
+                autonSelect = 4;
+                posX = 135;
+                posY = 138;
+                IMU.set_heading(-180);
+                break;
+            case 5:
+                // Full Autonomous Win Point
+                autonSelect = 5;
+                posX = 135;
+                posY = 138;
+                IMU.set_heading(-180);
+                break;
+            case 6:
+                // No Auton
+                autonSelect = 6;
+                posX = 135;
+                posY = 138;
+                IMU.set_heading(-180);
+                break;
+            case 7:
+                // Programming Skills
+                autonSelect = 7;
+                posX = 16;
+                posY = 9;
+                IMU.set_heading(-90);
+                break;
         }
+        orientation = degToRad(360 - IMU.get_heading());
+        lastOrientation = orientation;
+        avgTheta = orientation + (deltaTheta / 2);
         AutonSelect();
     }
 }
