@@ -1,5 +1,4 @@
 #include "main.h"
-#include "pros/rtos.hpp"
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -15,7 +14,6 @@
 void autonomous() {
 	GamePhase = 2;
 	Controller.clear();
-	// autonSelect = 7;
 	std::cout << autonSelect << std::endl;
 	switch (autonSelect) {
 		case 1:

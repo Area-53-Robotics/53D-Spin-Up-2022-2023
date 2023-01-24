@@ -116,29 +116,6 @@ inline void BackwardsIntake() {
     intakeOn = !intakeOn;
 }
 
-inline void ToggleFlywheel(int velocity) {
-    if (!FlywheelSpinning) {
-        FlywheelSpinning = true;
-        FlywheelMotor1.move_velocity(velocity);
-        FlywheelMotor2.move_velocity(velocity);
-        /*
-        FlywheelMotor1.move_velocity(FlywheelMotorSpeed);
-        FlywheelMotor2.move_velocity(FlywheelMotorSpeed);
-        */
-    } else if (FlywheelSpinning) {
-        FlywheelMotor1.brake();
-        FlywheelMotor2.brake();
-        FlywheelSpinning = false;
-    }
-    ControllerDisplay();
-}
-
-inline void ToggleFlywheelSpeed() {
-    if (FlywheelMotorSpeed == 363) FlywheelMotorSpeed = 600;
-    else if (FlywheelMotorSpeed == 600) FlywheelMotorSpeed = 363;
-    ControllerDisplay();
-}
-
 inline void Indexer() {
     waitUntilMoveAbsolute(IndexerMotor, 55, 200);
     waitUntilMoveAbsolute(IndexerMotor, 0, 200);
@@ -158,25 +135,5 @@ inline void SpinRoller() {
     ToggleIntake();
     pros::delay(333);
     ToggleIntake();
-}
-
-inline void FlySpeedInc100() {
-    FlywheelMotorSpeed += 100;
-    ControllerDisplay();
-}
-
-inline void FlySpeedDec100() {
-    FlywheelMotorSpeed -= 100;
-    ControllerDisplay();
-}
-
-inline void FlySpeedInc10() {
-    FlywheelMotorSpeed += 10;
-    ControllerDisplay();
-}
-
-inline void FlySpeedDec10() {
-    FlywheelMotorSpeed -= 10;
-    ControllerDisplay();
 }
 // */

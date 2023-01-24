@@ -1,3 +1,11 @@
+v2.2.0 (1/24/22)
+- Created flywheel.cpp & flywheel.hpp, and moved relevant functions into these files
+- Renamed high goal constants and flywheel constants for better readability
+- Created PIDTurnTo function for turning towards specific objects
+- autonSelect variable is now declared in initialize() and the starting odometry positions adjust accordingly
+- Odometry and PID terminal print functions now use printf instead of cout
+- Started working on auto aim function
+----------------------------------------------------------------------------------------------------------------------------------
 v2.1.0 (1/21/23) - Southern Maryland Showdown
 - Included fstream
 - Reformatted flywheel adjustment algorithm

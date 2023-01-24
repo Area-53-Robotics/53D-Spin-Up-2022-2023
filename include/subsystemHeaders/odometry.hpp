@@ -45,12 +45,15 @@ extern double deltaYGlobal;
 extern double posX;
 extern double posY;
 
-extern double x;
-extern double goalDist;
+extern double idealDiscDist;
+extern double highGoalDist;
+extern double lowGoalDist;
 
 // Constants
-  extern const double goalX;
-  extern const double goalY;
+  extern const double highGoalX;
+  extern const double highGoalY;
+  extern const double lowGoalX;
+  extern const double lowGoalY;
 // Constants
 
 extern bool odomRunning;
@@ -60,9 +63,9 @@ extern void runOdometry();
 
 extern void odomKillSwitch();
 
-extern const double fDist;
-extern const double h;
-extern const double a;
-extern const double y;
+extern const double flyDist;
+extern const double flyHeight;
+extern const double flyAngle;
+extern const double idealDiscHeight;
 
-extern double goalDistance();
+extern double findDiscVelocity();

@@ -31,6 +31,57 @@ void initialize() {
 	sylib::initialize();
 
 	IMU.reset();
+
+	autonSelect = 1;
+
+	switch (autonSelect) {
+        case 1:
+            // Left Quals
+            posX = 16;
+            posY = 9;
+            IMU.set_heading(-90);
+            break;
+        case 2:
+            // Right Quals
+            posX = 135;
+            posY = 138;
+            IMU.set_heading(-180);
+            break;
+        case 3:
+            // Left Elims
+            posX = 16;
+            posY = 9;
+            IMU.set_heading(-90);
+            break;
+        case 4:
+            // Right Elims
+            posX = 135;
+            posY = 138;
+            IMU.set_heading(-180);
+            break;
+        case 5:
+            // Full Autonomous Win Point
+            posX = 135;
+            posY = 138;
+            IMU.set_heading(-180);
+            break;
+        case 6:
+            // No Auton
+            posX = 135;
+            posY = 138;
+            IMU.set_heading(-180);
+            break;
+        case 7:
+            // Programming Skills
+            posX = 16;
+            posY = 9;
+            IMU.set_heading(-90);
+            break;
+    }
+    orientation = degToRad(360 - IMU.get_heading());
+	simplifyAngle(orientation);
+    lastOrientation = orientation;
+    avgTheta = orientation + (deltaTheta / 2);
 	
 	// pros::Task Odometry(runOdometry);
 	// pros::Task OdomDataCollection(odomDataCollection);

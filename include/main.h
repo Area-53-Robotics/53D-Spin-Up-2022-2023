@@ -79,6 +79,7 @@ void opcontrol(void);
 #include "subsystemHeaders/pid.hpp"
 #include "competition_initialize.hpp"
 #include "subsystemHeaders/misc.hpp"
+#include "subsystemHeaders/flywheel.hpp"
 #include <cmath>
 #include <fstream>
 #include <sstream>

@@ -39,6 +39,17 @@ double sec2(double theta) {
   return 1 / pow(cos(theta), 2);
 }
 
+double simplifyAngle(double theta) {
+  while(theta >= 2 * M_PI) {
+    theta -= 2 * M_PI;
+  }
+  
+  while(theta < 0) {
+    theta += 2 * M_PI;
+  }
+  return theta;
+}
+
 void odomDataCollection() {
   /*
   std::cout << center("totalDeltaL",14) << " | "
@@ -53,6 +64,13 @@ void odomDataCollection() {
     
   std::cout << std::string(15*8 + 2*8, '-') << "\n";
   */
+
+  printf("%s | %s | %s | %s | %s | %s | %s | %s | \n",
+    center("totalDeltaL", 14).c_str(), center("totalDeltaS",14).c_str(), center("IMU Heading", 14).c_str(),
+    center("orientation",14).c_str(), center("deltaTheta",14).c_str(), center("avgTheta",14).c_str(),
+    center("posX",14).c_str(), center("posY",14).c_str());
+  
+  printf("%s \n", std::string(15*8 + 2*8, '-').c_str());
 
   while(odomRunning) {
     /*
@@ -69,6 +87,7 @@ void odomDataCollection() {
     file2.open("/usd/OdomData.txt");
     */
 
+    /*
     std::cout << "totalDeltaL = " << totalDeltaL << std::endl;
     // std::cout << "totalDeltaR = " << totalDeltaR << std::endl;
     std::cout << "totalDeltaS = " << totalDeltaS << std::endl;
@@ -77,6 +96,13 @@ void odomDataCollection() {
     std::cout << "avgTheta = " << avgTheta << std::endl;
     std::cout << "posX = " << posX << std::endl;
     std::cout << "posY = " << posY << std::endl;
+    */
+
+    printf("%s | %s | %s | %s | %s | %s | %s | %s | \n",
+      prd(totalDeltaL,1,14).c_str(), prd(totalDeltaS,2,14).c_str(),
+      prd(IMU.get_heading(),0,14).c_str(), prd(radToDeg(orientation),2,14).c_str(),
+      prd(deltaTheta,2,14).c_str(), prd(avgTheta,2,14).c_str(), prd(posX,2,14).c_str(),
+      prd(posY,2,14).c_str());
 
     pros::delay(50);
   }

@@ -1,15 +1,15 @@
 #include "main.h"
 #include "subsystemHeaders/odometry.hpp"
 
-// Radius of the tracking wheels in inches
+//* Radius of the tracking wheels in inches
 const double WHEEL_RADIUS = 1.379;
 
-// Distances of tracking wheels from the tracking center in inches
+//* Distances of tracking wheels from the tracking center in inches
 const double lDist = 6.8335;
 // const double rDist = 6.8335;
 const double sDist = 5.85;
 
-// Starting angle relative to the field in radians
+//* Starting angle relative to the field in radians
 const double initOrientation = M_PI;
 
 double currentL = 0;
@@ -43,17 +43,18 @@ double deltaYGlobal = 0;
 double posX = 56.5;
 double posY = 8.5;
 
-double x;
-double goalDist;
+double idealDiscDist;
+double highGoalDist;
+double lowGoalDist;
 
 // std::ofstream file2;
 
-// Constants
-  const double goalX = 15.12;
-  const double goalY = 127.92;
-// Constants
-
-// double desiredX = 0, desiredY = 0, desiredOrientation = 0;
+// Location Constants
+  const double highGoalX = 17.461; // Measured in Onshape
+  const double highGoalY = 122.516; // Measured in Onshape
+  const double lowGoalX = 120;
+  const double lowGoalY = 24;
+// Location Constants
 
 bool odomRunning = false; // Overall odom running
 bool odomActive = false; // Whether odom is on delay or not
@@ -98,19 +99,14 @@ void runOdometry() {
     deltaXGlobal = (deltaYLocal * cos(avgTheta)) - (deltaXLocal * sin(avgTheta));
     deltaYGlobal = (deltaYLocal * sin(avgTheta)) + (deltaXLocal * cos(avgTheta));
 
-    while(orientation >= 2 * M_PI) {
-      orientation -= 2 * M_PI;
-    }
-    
-    while(orientation < 0) {
-      orientation += 2 * M_PI;
-    }
+    simplifyAngle(orientation);
 
     posX += deltaXGlobal;
     posY += deltaYGlobal;
 
-    goalDist = distFormula(posX, posY, goalX, goalY);
-    x = ((goalDist * 12) - fDist) * 0.0254; // Feet -> Inches -> Meters
+    highGoalDist = distFormula(posX, posY, highGoalX, highGoalY);
+    idealDiscDist = ((highGoalDist * 12) - flyDist) * 0.0254; // Feet -> Inches -> Meters
+    lowGoalDist = distFormula(posX, posY, lowGoalX, lowGoalY);
 
     odomActive = false;
 
@@ -122,11 +118,11 @@ void odomKillSwitch() {
   odomRunning = !odomRunning;
 }
 
-const double fDist = 5;
-const double h = 12; //measured with ruler
-const double a = M_PI / 4;
-const double y = 0.715;
+const double flyDist = 5;
+const double flyHeight = 12; //measured with ruler
+const double flyAngle = M_PI / 4;
+const double idealDiscHeight = 0.715;
 
-double goalDistance() {
-  return sqrt((4.9 * pow(x, 2) * sec2(a)) / ((0.0254 * h) + (x * tan(a)) - y));
+double findDiscVelocity() {
+  return sqrt((4.9 * pow(idealDiscDist, 2) * sec2(flyAngle)) / ((0.0254 * flyHeight) + (idealDiscDist * tan(flyAngle)) - idealDiscHeight));
 }
