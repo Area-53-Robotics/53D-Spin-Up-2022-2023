@@ -1,5 +1,5 @@
 #include "main.h"
-#include "subsystemHeaders/pid.hpp"
+#include "utilHeaders/pid.hpp"
 
 std::ofstream file;
 
@@ -7,7 +7,7 @@ bool PIDActive = false;
 double const driveFactor = 0.8;
 
 void PIDMove(double desiredX, double desiredY, bool isReverse) {
-  while (odomActive) pros::delay(1);
+  while (odomActive) sylib::delay(1);
   PIDActive = true;
   unsigned long long int PIDLoopNum = 1;
 
@@ -24,14 +24,14 @@ void PIDMove(double desiredX, double desiredY, bool isReverse) {
   double distDY = desiredY - posY;
   double desiredOrientation = orientation - atan2(distDY, distDX);
 
-  if (!isReverse) PIDTurn(desiredOrientation);
-  else if (isReverse) PIDTurn(desiredOrientation + M_PI);
+  if (!isReverse) desiredOrientation -= M_PI;
+
+  PIDTurn(desiredOrientation);
 
   while (error > 0.1 || error < -0.1) {
     PIDActive = true;
 
-    if (!isReverse && (orientation != desiredOrientation) && PIDLoopNum % 3 == 0) PIDTurn(desiredOrientation);
-    else if (isReverse && (orientation != desiredOrientation + M_PI) && PIDLoopNum % 3 == 0) PIDTurn(desiredOrientation + M_PI);
+    if ((orientation != desiredOrientation) && PIDLoopNum % 3 == 0) PIDTurn(desiredOrientation);
 
     error = distFormula(posX, posY, desiredX, desiredY);
     integral += error;
@@ -43,11 +43,23 @@ void PIDMove(double desiredX, double desiredY, bool isReverse) {
     if (power > 12000) power = 12000;
 
     if (!isReverse) {
+      /*
+      BLM.set_voltage(power);
+      FLM.set_voltage(power);
+      BRM.set_voltage(power * driveFactor);
+      FRM.set_voltage(power * driveFactor);
+      */
       BLM.move_voltage(power);
       FLM.move_voltage(power);
       BRM.move_voltage(power * driveFactor);
       FRM.move_voltage(power * driveFactor);
     } else {
+      /*
+      BLM.set_voltage(power * -1);
+      FLM.set_voltage(power * -1);
+      BRM.set_voltage(power * driveFactor * -1);
+      FRM.set_voltage(power * driveFactor * -1);
+      */
       BLM.move_voltage(power * -1);
       FLM.move_voltage(power * -1);
       BRM.move_voltage(power * driveFactor * -1);
@@ -113,8 +125,14 @@ void PIDMove(double desiredX, double desiredY, bool isReverse) {
 
     PIDLoopNum++;
 
-    pros::delay(10);
+    sylib::delay(10);
   }
+  /*
+  BLM.set_voltage(0);
+  FLM.set_voltage(0);
+  BRM.set_voltage(0);
+  FRM.set_voltage(0);
+  */
   BLM.move_voltage(0);
   FLM.move_voltage(0);
   BRM.move_voltage(0);
@@ -127,7 +145,7 @@ void PIDMove(double desiredX, double desiredY, bool isReverse) {
 }
 
 void PIDTurn(double desiredOrientation) {
-  while (odomActive) pros::delay(1);
+  while (odomActive) sylib::delay(1);
   PIDActive = true;
   unsigned long long int PIDLoopNum = 1;
 
@@ -153,15 +171,27 @@ void PIDTurn(double desiredOrientation) {
     if (power > 12000) power = 12000;
 
     if (desiredOrientation - orientation > 0) {
+      /*
+      BLM.set_voltage(power * -1);
+      FLM.set_voltage(power * -1);
+      BRM.set_voltage(power * driveFactor);
+      FRM.set_voltage(power * driveFactor);
+      */
       BLM.move_voltage(power * -1);
       FLM.move_voltage(power * -1);
       BRM.move_voltage(power * driveFactor);
       FRM.move_voltage(power * driveFactor);
     } else {
+      /*
+      BLM.set_voltage(power);
+      FLM.set_voltage(power);
+      BRM.set_voltage(power * driveFactor * -1);
+      FRM.set_voltage(power * driveFactor * -1);
+      */
       BLM.move_voltage(power);
       FLM.move_voltage(power);
       BRM.move_voltage(power * driveFactor * -1);
-      FRM.move_voltage(power * driveFactor * -1);
+      FRM.move_voltage(power * driveFactor * -1);  
     }
 
     // Data Collection
@@ -183,8 +213,14 @@ void PIDTurn(double desiredOrientation) {
 
     PIDLoopNum++;
 
-    pros::delay(10);
+    sylib::delay(10);
   }
+  /*
+  BLM.set_voltage(0);
+  FLM.set_voltage(0);
+  BRM.set_voltage(0);
+  FRM.set_voltage(0);
+  */
   BLM.move_voltage(0);
   FLM.move_voltage(0);
   BRM.move_voltage(0);
@@ -196,9 +232,10 @@ void PIDTurn(double desiredOrientation) {
   PIDActive = false;
 }
 
-void PIDTurnTo(double x, double y) {
+void PIDTurnTo(double x, double y, bool isReverse) {
   double distDX = x - posX;
   double distDY = y - posY;
   double desiredOrientation = orientation - atan2(distDY, distDX);
+  if (isReverse) desiredOrientation -= M_PI;
   PIDTurn(desiredOrientation);
 }

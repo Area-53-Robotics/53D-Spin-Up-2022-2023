@@ -1,5 +1,5 @@
 #include "main.h"
-#include "subsystemHeaders/odometry.hpp"
+#include "utilHeaders/odometry.hpp"
 
 //* Radius of the tracking wheels in inches
 const double WHEEL_RADIUS = 1.379;
@@ -32,7 +32,7 @@ double deltaTheta = 0;
 
 double orientation;
 double lastOrientation;
-double avgTheta = orientation + (deltaTheta / 2);
+double avgTheta;
 
 double deltaXLocal = 0;
 double deltaYLocal = 0;
@@ -40,20 +40,25 @@ double deltaYLocal = 0;
 double deltaXGlobal = 0;
 double deltaYGlobal = 0;
 
-double posX = 56.5;
-double posY = 8.5;
+double posX;
+double posY;
 
 double idealDiscDist;
 double highGoalDist;
 double lowGoalDist;
 
+double teamHighGoalDist;
+double teamDiscDist;
+
 // std::ofstream file2;
 
 // Location Constants
-  const double highGoalX = 17.461; // Measured in Onshape
-  const double highGoalY = 122.516; // Measured in Onshape
+  const double highGoalX = 17.880563; // Measured in Onshape
+  const double highGoalY = 122.935637; // Measured in Onshape
   const double lowGoalX = 120;
   const double lowGoalY = 24;
+  const double teamHighGoalX = 122.935637; // Measured in Onshape
+  const double teamHighGoalY = 17.880563; // Measured in Onshape
 // Location Constants
 
 bool odomRunning = false; // Overall odom running
@@ -105,12 +110,15 @@ void runOdometry() {
     posY += deltaYGlobal;
 
     highGoalDist = distFormula(posX, posY, highGoalX, highGoalY);
-    idealDiscDist = ((highGoalDist * 12) - flyDist) * 0.0254; // Feet -> Inches -> Meters
+    idealDiscDist = (highGoalDist - flyDist) * 0.0254; //Inches -> Meters
     lowGoalDist = distFormula(posX, posY, lowGoalX, lowGoalY);
+
+    teamHighGoalDist = distFormula(posX, posY, teamHighGoalX, teamHighGoalY);
+    teamDiscDist = (teamHighGoalDist - flyDist) * 0.0254; //Inches -> Meters
 
     odomActive = false;
 
-    pros::delay(10);
+    sylib::delay(10);
   }
 }
 
@@ -125,4 +133,8 @@ const double idealDiscHeight = 0.715;
 
 double findDiscVelocity() {
   return sqrt((4.9 * pow(idealDiscDist, 2) * sec2(flyAngle)) / ((0.0254 * flyHeight) + (idealDiscDist * tan(flyAngle)) - idealDiscHeight));
+}
+
+double findTeamDiscVelocity() {
+  return sqrt((4.9 * pow(teamDiscDist, 2) * sec2(flyAngle)) / ((0.0254 * flyHeight) + (teamDiscDist * tan(flyAngle)) - idealDiscHeight));
 }

@@ -7,4 +7,7 @@ extern double radToDeg(double degrees);
 extern double distFormula(double x1, double y1, double x2, double y2);
 extern double sec2(double theta);
 extern double simplifyAngle(double theta);
+extern int normalMotorDegToTicks(double degrees);
+int normalMotorRevToTicks(double revolutions);
+int VConversion(double voltage);
 extern void odomDataCollection();

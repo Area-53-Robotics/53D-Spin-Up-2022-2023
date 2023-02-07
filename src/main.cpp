@@ -30,9 +30,16 @@ void initialize() {
 
 	sylib::initialize();
 
-	IMU.reset();
+    /*
+    BLM.set_is_reversed(true);
+	FLM.set_is_reversed(true);
+    IntakeMotor.set_is_reversed(true);
+    IndexerMotor.set_is_reversed(true);
+    */
 
-	autonSelect = 1;
+	IMU.reset(true);
+
+	autonSelect = 7;
 
 	switch (autonSelect) {
         case 1:

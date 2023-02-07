@@ -73,13 +73,15 @@ void opcontrol(void);
 #endif
 
 #ifdef __cplusplus
-#include "subsystemHeaders/drive.hpp"
 #include "global.hpp"
-#include "subsystemHeaders/odometry.hpp"
-#include "subsystemHeaders/pid.hpp"
-#include "competition_initialize.hpp"
-#include "subsystemHeaders/misc.hpp"
+#include "subsystemHeaders/drive.hpp"
 #include "subsystemHeaders/flywheel.hpp"
+#include "subsystemHeaders/indexer.hpp"
+#include "subsystemHeaders/intake.hpp"
+#include "utilHeaders/odometry.hpp"
+#include "utilHeaders/pid.hpp"
+#include "utilHeaders/misc.hpp"
+#include "competition_initialize.hpp"
 #include <cmath>
 #include <fstream>
 #include <sstream>

@@ -49,11 +49,16 @@ extern double idealDiscDist;
 extern double highGoalDist;
 extern double lowGoalDist;
 
+extern double teamHighGoalDist;
+extern double teamDiscDist;
+
 // Constants
   extern const double highGoalX;
   extern const double highGoalY;
   extern const double lowGoalX;
   extern const double lowGoalY;
+  extern const double teamHighGoalX;
+  extern const double teamHighGoalY;
 // Constants
 
 extern bool odomRunning;
@@ -69,3 +74,4 @@ extern const double flyAngle;
 extern const double idealDiscHeight;
 
 extern double findDiscVelocity();
+extern double findTeamDiscVelocity();

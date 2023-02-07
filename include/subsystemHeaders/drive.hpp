@@ -1,5 +1,3 @@
-#include "api.h"
-
-extern float getMotorOutput(int i);
+extern float getMotorOutput(int input);
 extern void DirectionToggle();
 extern void setDriveMotors();

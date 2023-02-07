@@ -1,5 +1,5 @@
 #include "main.h"
-#include "subsystemHeaders/misc.hpp"
+#include "utilHeaders/misc.hpp"
 
 std::string prd(const double x, const int decDigits, const int width) {
     // using namespace std;
@@ -48,6 +48,23 @@ double simplifyAngle(double theta) {
     theta += 2 * M_PI;
   }
   return theta;
+}
+
+/*
+  1800 ticks/rev with 36:1 gearing (torque)
+  900 ticks/rev with 18:1 gearing (normal)
+  300 ticks/rev with 6:1 gearing (speed)
+*/
+int normalMotorDegToTicks(double degrees) {
+  return degrees * 900/360;
+}
+
+int normalMotorRevToTicks(double revolutions) {
+  return revolutions * 900;
+}
+
+int VConversion(double voltage) {
+  return voltage * 12000 / 127;
 }
 
 void odomDataCollection() {
@@ -104,6 +121,6 @@ void odomDataCollection() {
       prd(deltaTheta,2,14).c_str(), prd(avgTheta,2,14).c_str(), prd(posX,2,14).c_str(),
       prd(posY,2,14).c_str());
 
-    pros::delay(50);
+    sylib::delay(50);
   }
 }

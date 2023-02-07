@@ -32,8 +32,6 @@ void opcontrol() {
 	
 	while (true) {
 
-
-
 		L1Button = Controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 		L2Button = Controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 		R1Button = Controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
@@ -65,7 +63,7 @@ void opcontrol() {
 		if(Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) FlySpeedDec10();
 		*/
 
-		pros::delay(20);
+		sylib::delay(20);
 
 	}
 }

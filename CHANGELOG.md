@@ -1,4 +1,12 @@
-v2.2.0 (1/24/22)
+v2.3.0 (2/7/23)
+- Switched flywheel motors and flywheel motor class functions to sylib motors and functions
+- Created normalMotorAngleToTicks function for use with sylib functions
+- All motor related functions adjusted to use sylib motor functions
+- Considerable progress made on PID programming skills framework & non-PID autons
+- Implemented new drive curve (more steep)
+- Created a util folder & header folder for odometry.cpp, pid.cpp, and misc.cpp
+----------------------------------------------------------------------------------------------------------------------------------
+v2.2.0 (1/24/23)
 - Created flywheel.cpp & flywheel.hpp, and moved relevant functions into these files
 - Renamed high goal constants and flywheel constants for better readability
 - Created PIDTurnTo function for turning towards specific objects
