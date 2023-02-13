@@ -78,6 +78,7 @@ void opcontrol(void);
 #include "subsystemHeaders/flywheel.hpp"
 #include "subsystemHeaders/indexer.hpp"
 #include "subsystemHeaders/intake.hpp"
+#include "subsystemHeaders/expansion.hpp"
 #include "utilHeaders/odometry.hpp"
 #include "utilHeaders/pid.hpp"
 #include "utilHeaders/misc.hpp"

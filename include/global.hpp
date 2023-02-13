@@ -1,4 +1,6 @@
 #include "api.h"
+#include "pros/adi.hpp"
+#include "pros/motors.h"
 #include "utilHeaders/misc.hpp"
 #include "competition_initialize.hpp"
 #include "sylib/sylib.hpp"
@@ -33,13 +35,19 @@ inline pros::Motor BRM(10, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODE
 inline pros::Motor FRM(1, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_ROTATIONS);
 inline pros::Motor IntakeMotor(6, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
 inline pros::Motor IndexerMotor(13, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
+inline pros::Motor FlywheelMotor1(16, pros::E_MOTOR_GEARSET_06, false);
+inline pros::Motor FlywheelMotor2(18, pros::E_MOTOR_GEARSET_06, false);
+/*
 inline sylib::Motor FlywheelMotor1(16, 600, false);
 inline sylib::Motor FlywheelMotor2(18, 600, false);
+*/
 
 inline pros::Imu IMU(9);
 inline pros::ADIEncoder LEncoder(7, 8, true);
 // inline pros::ADIEncoder REncoder(3, 4, false);
 inline pros::ADIEncoder SEncoder(1, 2, false);
+
+inline pros::ADIDigitalOut ExpansionPiston(5);
 
 inline short int LYAxis;
 inline short int RYAxis;
@@ -57,13 +65,13 @@ inline unsigned short int GamePhase = 1;
     6: No Auton
     7: Programming Skills
 */
-inline unsigned short int autonSelect = 3;
+inline unsigned short int autonSelect;
 
 inline bool isReverse = false;
 inline bool FlywheelSpinning = false;
 inline bool intakeOn = false;
 
-inline int FlywheelMotorSpeed = 363;
+inline int FlywheelMotorSpeed = 340;
 
 const double FlywheelRadius = 2.5;
 

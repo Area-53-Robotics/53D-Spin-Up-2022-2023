@@ -6,30 +6,30 @@ const double flyFactor = 0.5; //! Needs testing
 void ToggleFlywheel(int velocity) {
     if (!FlywheelSpinning) {
         FlywheelSpinning = true;
+        /*
         FlywheelMotor1.set_velocity(velocity);
         FlywheelMotor2.set_velocity(velocity);
-        /*
         FlywheelMotor1.set_velocity_custom_controller(velocity);
         FlywheelMotor2.set_velocity_custom_controller(velocity);
+        */
         FlywheelMotor1.move_velocity(velocity);
         FlywheelMotor2.move_velocity(velocity);
-        */
     } else if (FlywheelSpinning) {
+        /*
         FlywheelMotor1.stop();
         FlywheelMotor2.stop();
-        /*
+        */
         FlywheelMotor1.brake();
         FlywheelMotor2.brake();
-        */
         FlywheelSpinning = false;
     }
     ControllerDisplay();
 }
 
 void ToggleFlywheelSpeed() {
-    if (FlywheelMotorSpeed == 363) FlywheelMotorSpeed = 500;
-    else if (FlywheelMotorSpeed == 500) FlywheelMotorSpeed = 600;
-    else if (FlywheelMotorSpeed == 600) FlywheelMotorSpeed = 363;
+    if (FlywheelMotorSpeed == 340) FlywheelMotorSpeed = 430;
+    else if (FlywheelMotorSpeed == 430) FlywheelMotorSpeed = 600;
+    else if (FlywheelMotorSpeed == 600) FlywheelMotorSpeed = 340;
     ControllerDisplay();
 }
 

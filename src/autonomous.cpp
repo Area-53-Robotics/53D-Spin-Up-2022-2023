@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/misc.hpp"
 #include "pros/rtos.hpp"
 #include "sylib/system.hpp"
 
@@ -14,15 +15,14 @@
  * from where it left off.
  */
 void autonomous() {
-	GamePhase = 2;
+	GamePhase = 7;
+	if (pros::competition::is_connected()) autonSelect = 2;
 	Controller.clear();
-	// std::cout << autonSelect << std::endl;
 	switch (autonSelect) {
 		case 1:
-			//* Low Goal Auton
-			sylib::delay(50);
-			Controller.print(0, 0, 
-			"Ur mom weighs auton");
+			//* Gets roller & shoots 2 discs into low goal
+			//* Last updated 1/21/23
+			Controller.print(0, 0, "Ur mom weighs auton");
 			BackwardsIntake();
 			drive(0.1, 50);
 			sylib::delay(250);
@@ -61,38 +61,34 @@ void autonomous() {
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 2:
-			//! Needs to be made
+			//* Moves toward & turns roller, shoots 2 discs into low goal
+			//* Last updated 2/11/23
 			Controller.print(0, 0, "Right Quals Auton");
-			drive(1,50);
+			drive(1.4, 50);
 			sylib::delay(1000);
-			turn('R', 0.7,50);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			drive(1,50);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			turn('R',0.7,50);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			drive(1, 50);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			ToggleIntake();
+			turn('R', 0.65, 50);
+			sylib::delay(1000);
+			drive(0.4, 50);
+			sylib::delay(1000);
+			BackwardsIntake();
+			sylib::delay(300);
+			BackwardsIntake();
 			sylib::delay(500);
-			ToggleIntake();
-			// Copied from Left Quals Auton
-			turn('R', 0.8,50);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			ToggleFlywheel(475);
-			sylib::delay(6000);
-			Indexer();
-			sylib::delay(2000);
-			Indexer();
-			sylib::delay(2000);
-			Indexer();
-			sylib::delay(2000);
-			Indexer();
-			// Copied from Left Quals Auton
+			drive(-0.3, 50);
+			sylib::delay(1400);
+			turn('L', 0.7, 50);
+			sylib::delay(1500);
+			ToggleFlywheel(350);
+			sylib::delay(3000);
+			for(int i = 0; i < 8; i++) {
+				Indexer();
+				sylib::delay(1200);
+			}
 			Controller.print(0,0,"Auton Completed");
 			break;
 		case 3:
 			//! High Goal Auton - not tested
+			//* Last updated 1/21/23
 			Controller.print(0, 0, "Left Elims Auton");
 			BackwardsIntake();
 			drive(0.1, 50);
@@ -137,61 +133,46 @@ void autonomous() {
 			*/
 			break;
 		case 4:
-			//! High Goal Auton - not tested
+			//! High Goal Auton - needs flywheel speed adjusted
+			//* Last updated 2/11/23
 			Controller.print(0, 0, "Right Elims Auton");
-			drive(1, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			turn('R', 0.7, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			drive(1, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			turn('R', 1, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			drive(1, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			BackwardsIntake();
-			sylib::delay(250);
-			BackwardsIntake();
-			drive(0.3, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			turn('R', 0.2, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			ToggleFlywheel(500);
-			sylib::delay(3000);
-			for(int i = 0; i < 4; i++) Indexer();
-			ToggleFlywheel(0);
-			turn('R', 0.5, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			ToggleIntake();
-			drive(1, 100);
+			drive(1.4, 50);
 			sylib::delay(1000);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			drive(1, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
+			turn('R', 0.65, 50);
 			sylib::delay(1000);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			drive(1, 100);
-			while(!FRM.is_stopped()) sylib::delay(2);
-			turn('L', 0.5, 100);
-			// while(!FRM.is_stopped()) sylib::delay(2);
-			ToggleFlywheel(300);
+			drive(0.4, 50);
+			sylib::delay(1000);
+			BackwardsIntake();
+			sylib::delay(300);
+			BackwardsIntake();
+			sylib::delay(500);
+			drive(-0.3, 50);
+			sylib::delay(400);
+			turn('L', 0.09, 50);
+			sylib::delay(500);
+			// 409 is a good number
+			ToggleFlywheel(460);
+			// shoot in goal
 			sylib::delay(3000);
-			for(int i = 0; i < 6; i++) Indexer();
-			ToggleIntake();
-			ToggleFlywheel(0);
+			for(int i = 1; i <= 8; i++) {
+				Indexer();
+				std::cout << "Shot #: " << i << "; Power: " << FlywheelMotor1.get_actual_velocity() << std::endl;
+				sylib::delay(2500);
+			}
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 5:
 			Controller.print(0, 0, "Full AWP");
 			//* Will end up being mostly made of left elims auton values
+			//* Last updated ---
 			Controller.print(1, 0, "Auton Completed");
 			break;
 		case 6:
 			Controller.print(0, 0, "No Auton Selected");
 			break;
 		case 7:
-			sylib::delay(50);
 			Controller.print(0, 0, "Programming Skills");
+			//* Last updated 2/7/23
 			BackwardsIntake();
 			drive(0.35, 50);
 			sylib::delay(500);
@@ -215,7 +196,7 @@ void autonomous() {
 			sylib::delay(3000);
 			turn('R', 0.2, 50);
 			sylib::delay(1000);
-			ToggleFlywheel(410);
+			ToggleFlywheel(430);
 			sylib::delay(4000);
 			Indexer();
 			while(!IndexerMotor.is_stopped()) sylib::delay(2);

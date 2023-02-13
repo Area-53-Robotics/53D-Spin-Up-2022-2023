@@ -23,10 +23,12 @@ void opcontrol() {
 	bool L2Button;
 	bool R1Button;
 	bool R2Button;
+	bool DownButton;
+	bool BButton;
 
 	if(!pros::competition::is_connected()) {
 		// competition_initialize();
-		// autonSelect = 3;
+		// autonSelect = 2;
 		// autonomous();
 	}
 	
@@ -36,11 +38,13 @@ void opcontrol() {
 		L2Button = Controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 		R1Button = Controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
 		R2Button = Controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
-
+		DownButton = Controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
+		BButton = Controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
+ 
 		setDriveMotors();
 		
 		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) DirectionToggle();
-		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) Expansion();
+		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B) && DownButton) Expansion();
 		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) ToggleFlywheelSpeed();
 		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) SpinRoller();
 		if (Controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) Indexer();

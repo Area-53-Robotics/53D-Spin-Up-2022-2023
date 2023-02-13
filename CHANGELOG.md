@@ -1,3 +1,10 @@
+v2.4.0 (2/11/23) - STEM Gym Tournament
+- Created expansion.cpp & expansion.hpp
+- Created new expansion code for the new pneumatic expansion system
+- Completed Right Side Quals Auton
+- Made progress on Right Side Elims Auton
+- Expansion now requires the Down button and B button to activate
+----------------------------------------------------------------------------------------------------------------------------------
 v2.3.0 (2/7/23)
 - Switched flywheel motors and flywheel motor class functions to sylib motors and functions
 - Created normalMotorAngleToTicks function for use with sylib functions
