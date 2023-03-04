@@ -1,7 +1,7 @@
 #include "api.h"
 
 extern bool PIDActive;
-extern double const driveFactor;
+extern const double rightDriveFactor;
 
 extern void PIDMove(double desiredX, double desiredY, bool isReverse);
 extern void PIDTurn(double desiredOrientation);

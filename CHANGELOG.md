@@ -1,3 +1,17 @@
+v3.0.0 (3/4/23)
+- Created controller.cpp && controller.hpp
+- Moved most functions in global.hpp into their respective files
+- Updated sylib to v1.0.1
+- Installed gif-pros to play gifs on the brain screen
+- Created drive motor groups to make drive code more compact
+- Added descriptions for all important variables and functions
+- Flywheel control is now part of a task to allow quick switching speed
+- Intake is now a hold instead of a toggle
+- Programmed the new roller indexer
+- Turn PD tuned to +/- 3 degrees of error
+- Move P tuned to approximately 2 inches of error
+- Parts of the qualification autonomous programs now use the Turn PID
+----------------------------------------------------------------------------------------------------------------------------------
 v2.4.0 (2/11/23) - STEM Gym Tournament
 - Created expansion.cpp & expansion.hpp
 - Created new expansion code for the new pneumatic expansion system

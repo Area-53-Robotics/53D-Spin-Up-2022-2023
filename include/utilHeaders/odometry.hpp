@@ -5,29 +5,26 @@ extern const double WHEEL_RADIUS;
 
 // Distances of tracking wheels from the tracking center in inches
 extern const double lDist;
-// extern const double rDist;
+extern const double rDist;
 extern const double sDist;
 
 // Starting angle relative to the field in radians
-extern const double initOrientation;
-
-extern const double X_START;
-extern const double Y_START;
+extern double initOrientation;
 
 extern double currentL;
-// extern double currentR;
+extern double currentR;
 extern double currentS;
 
-extern double deltaL;
-// extern double deltaR;
-extern double deltaS;
-
 extern double lastL;
-// extern double lastR;
+extern double lastR;
 extern double lastS;
 
+extern double deltaL;
+extern double deltaR;
+extern double deltaS;
+
 extern double totalDeltaL;
-// extern double totalDeltaR;
+extern double totalDeltaR;
 extern double totalDeltaS;
 
 extern double deltaTheta;
@@ -62,10 +59,11 @@ extern double teamDiscDist;
 // Constants
 
 extern bool odomRunning;
-extern bool odomActive;
+extern bool odomLoopActive;
 
 extern void runOdometry();
-
+extern void setStartingOdomValues();
+extern void resetOdomPositions(int rollerNum);
 extern void odomKillSwitch();
 
 extern const double flyDist;
@@ -75,3 +73,5 @@ extern const double idealDiscHeight;
 
 extern double findDiscVelocity();
 extern double findTeamDiscVelocity();
+
+extern void odomDataCollection();

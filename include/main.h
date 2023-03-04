@@ -36,6 +36,7 @@
 
 #include "api.h"
 #include "sylib/sylib.hpp"
+#include "gif-pros/gifclass.hpp"
 
 /**
  * You should add more #includes here
@@ -75,13 +76,15 @@ void opcontrol(void);
 #ifdef __cplusplus
 #include "global.hpp"
 #include "subsystemHeaders/drive.hpp"
+#include "subsystemHeaders/expansion.hpp"
 #include "subsystemHeaders/flywheel.hpp"
 #include "subsystemHeaders/indexer.hpp"
 #include "subsystemHeaders/intake.hpp"
-#include "subsystemHeaders/expansion.hpp"
+#include "utilHeaders/controller.hpp"
+#include "utilHeaders/misc.hpp"
 #include "utilHeaders/odometry.hpp"
 #include "utilHeaders/pid.hpp"
-#include "utilHeaders/misc.hpp"
+#include "autonomous.hpp"
 #include "competition_initialize.hpp"
 #include <cmath>
 #include <fstream>

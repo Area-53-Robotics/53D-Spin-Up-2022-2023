@@ -30,68 +30,36 @@ void initialize() {
 
 	sylib::initialize();
 
-    /*
-    BLM.set_is_reversed(true);
-	FLM.set_is_reversed(true);
-    IntakeMotor.set_is_reversed(true);
-    IndexerMotor.set_is_reversed(true);
-    */
-
+	/*
+	*	Plays an intro gif on the brain while the inertial sensor
+	*	calibrates
+	*/
+	lv_obj_t* obj = lv_obj_create(lv_scr_act(), NULL);
+	lv_obj_set_size(obj, 480, 270);
+	lv_obj_set_style(obj, &lv_style_transp); // make the container invisible
+	lv_obj_align(obj, NULL, LV_ALIGN_CENTER, 0, 0);
+	Gif gif("/usd/JJBA.gif", obj);
 	IMU.reset(true);
+	pros::delay(5250);
+	gif.clean();
 
-	autonSelect = 7;
+	//* Resets all of the tracking wheel encoders
+	LEncoder.reset();
+	REncoder.reset();
+	SEncoder.reset();
 
-	switch (autonSelect) {
-        case 1:
-            // Left Quals
-            posX = 16;
-            posY = 9;
-            IMU.set_heading(-90);
-            break;
-        case 2:
-            // Right Quals
-            posX = 135;
-            posY = 138;
-            IMU.set_heading(-180);
-            break;
-        case 3:
-            // Left Elims
-            posX = 16;
-            posY = 9;
-            IMU.set_heading(-90);
-            break;
-        case 4:
-            // Right Elims
-            posX = 135;
-            posY = 138;
-            IMU.set_heading(-180);
-            break;
-        case 5:
-            // Full Autonomous Win Point
-            posX = 135;
-            posY = 138;
-            IMU.set_heading(-180);
-            break;
-        case 6:
-            // No Auton
-            posX = 135;
-            posY = 138;
-            IMU.set_heading(-180);
-            break;
-        case 7:
-            // Programming Skills
-            posX = 16;
-            posY = 9;
-            IMU.set_heading(-90);
-            break;
-    }
-    orientation = degToRad(360 - IMU.get_heading());
-	simplifyAngle(orientation);
-    lastOrientation = orientation;
-    avgTheta = orientation + (deltaTheta / 2);
-	
-	// pros::Task Odometry(runOdometry);
-	// pros::Task OdomDataCollection(odomDataCollection);
+	/*
+	*	Sets the odometry and flywheel control tasks to run in the
+	*	background of the program
+	*/
+	pros::Task Odometry(runOdometry);
+	pros::Task FlywheelControl(FlywheelController);
+
+	//
+		// pros::Task OdomDataCollection(odomDataCollection);
+		// pros::Task dataCollection(printTestValue);
+	//
+
 }
 
 /**
@@ -99,4 +67,15 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {}
+void disabled() {
+	/*
+	*	Plays a gif on the brain during the disabled phase
+	*/
+	if (GamePhase == 3) {
+		lv_obj_t* obj = lv_obj_create(lv_scr_act(), NULL);
+		lv_obj_set_size(obj, 272, 350);
+		lv_obj_set_style(obj, &lv_style_transp); // make the container invisible
+		lv_obj_align(obj, NULL, LV_ALIGN_CENTER, 0, 0);
+		Gif gif("/usd/Alien.gif", obj);
+	}
+}

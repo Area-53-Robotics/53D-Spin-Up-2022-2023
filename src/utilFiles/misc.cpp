@@ -1,8 +1,16 @@
 #include "main.h"
 #include "utilHeaders/misc.hpp"
 
+/*
+? Miscellaneous functions used throughout the program.
+*/
+
+/*
+* This function prints a rounded decimal value with a specified
+* number of spaces around it. This function is used to tabulate
+* information.
+*/
 std::string prd(const double x, const int decDigits, const int width) {
-    // using namespace std;
     std::stringstream ss;
     ss << std::fixed << std::right;
     ss.fill(' ');        // fill space around displayed #
@@ -12,6 +20,10 @@ std::string prd(const double x, const int decDigits, const int width) {
     return ss.str();
 }
 
+/*
+* This function prints a string with a specified number of spaces
+* around it. This function is also used to tabulate information.
+*/
 std::string center(const std::string s, const int w) {
     std::stringstream ss, spaces;
     int padding = w - s.size();                 // count excess room to pad
@@ -23,27 +35,62 @@ std::string center(const std::string s, const int w) {
     return ss.str();
 }
 
+/*
+* This function delays the program until the specified motor has
+* rotated to the specified position.
+*/
+void waitUntilMoveAbsolute(pros::Motor Motor, double position, int velocity) {
+    int count = 1;
+    Motor.move_absolute(position, velocity);
+    while (!((Motor.get_position() < (position + 5)) && (Motor.get_position() > (position - 5))) && count < 1000) {
+        count++;
+        sylib::delay(2);
+    }
+}
+
+//* This function converts degrees to radians.
 double degToRad(double degrees) {
   return degrees * M_PI / 180;
 }
 
+//* This function converts radians to degrees.
 double radToDeg(double radians) {
   return radians * 180 / M_PI;
 }
 
+/*
+* This function calculates the distance between a point with
+* coordinates (x1, x2) and a point with coordinates (x2, y2).
+*/
 double distFormula(double x1, double y1, double x2, double y2) {
-  return sqrt(pow((x2 - x1), 2) + pow((y2-y1), 2));
+  return sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2));
 }
 
+/*
+* This function calculates the secant of an angle in radians and
+* squares it.
+*/
 double sec2(double theta) {
   return 1 / pow(cos(theta), 2);
 }
 
-double simplifyAngle(double theta) {
+/*
+* This function simplifies an angle in radians until it is within
+* the interval [0, 2 * PI)
+*/
+double simplifyRadAngle(double theta) {
+  /*
+  * While the angle is greater than or equal to 2 * PI, the angle
+  * is subtracted by 2 * PI.
+  */
   while(theta >= 2 * M_PI) {
     theta -= 2 * M_PI;
   }
   
+  /*
+  * While the angle is less than 2 * PI, the angle is subtracted
+  * by 2 * PI.
+  */
   while(theta < 0) {
     theta += 2 * M_PI;
   }
@@ -67,60 +114,49 @@ int VConversion(double voltage) {
   return voltage * 12000 / 127;
 }
 
-void odomDataCollection() {
+void printTestValue() {
   /*
-  std::cout << center("totalDeltaL",14) << " | "
-            // << center("totalDeltaR",14) << " | "
-            << center("totalDeltaS",14) << " | "
-            << center("IMU Heading", 14) << " | "
-            << center("orientation",14) << " | "
-            << center("deltaTheta",14) << " | "
-            << center("avgTheta",14) << " | "
-            << center("posX",14) << " | "
-            << center("posY",14) << " | " << "\n";
-    
-  std::cout << std::string(15*8 + 2*8, '-') << "\n";
-  */
-
-  printf("%s | %s | %s | %s | %s | %s | %s | %s | \n",
-    center("totalDeltaL", 14).c_str(), center("totalDeltaS",14).c_str(), center("IMU Heading", 14).c_str(),
-    center("orientation",14).c_str(), center("deltaTheta",14).c_str(), center("avgTheta",14).c_str(),
-    center("posX",14).c_str(), center("posY",14).c_str());
+  std::cout << "Target Velo: " << targetFWMSpeed << std::endl;
+  // std::cout << "kP: " << k
+  std::cout << center("FWM1 Velo",10)       << " | "
+            << center("FWM1 Volt",10)       << " | "
+            << center("FWM2 Velo",10)       << " | "
+            << center("FWM2 Volt",10)       << "\n";
   
-  printf("%s \n", std::string(15*8 + 2*8, '-').c_str());
+  std::cout << std::string(10*4 + 4*2, '-') << "\n";
 
-  while(odomRunning) {
+  while (true) {
+    std::cout << prd(FlywheelMotor1.get_velocity(),3,10)     << " | "
+              << prd(FlywheelMotor1.get_applied_voltage(),3,10)     << " | "
+              << prd(FlywheelMotor2.get_velocity(),3,10)     << " | "
+              << prd(FlywheelMotor2.get_applied_voltage(),3,10)     << "\n";
+    
+    pros::delay(50);
+  }
+  */
+  std::cout << center("Velo", 10) << " | "
+            << center("Error", 10) << " | "
+            << center("Volt", 10) << " | "
+            << center("V Term", 10) << " | "
+            << center("P Term", 10) << "\n";
+            
+  std::cout << std::string(10*4 + 4*2, '-') << "\n";
+
+  while(true) {
     /*
-    std::cout << prd(totalDeltaL,1,14) << " | "
-              // << prd(totalDeltaR,1,14) << " | "
-              << prd(totalDeltaS,2,14) << " | "
-              << prd(IMU.get_heading(),0,14) << " | "
-              << prd(radToDeg(orientation),2,14) << " | "
-              << prd(deltaTheta,2,14) << " | "
-              << prd(avgTheta,2,14) << " | "
-              << prd(posX,2,14) << " | "
-              << prd(posY,2,14) << " | " << "\n";
-
-    file2.open("/usd/OdomData.txt");
+  std::cout << prd(FlywheelMotor1.get_velocity(), 3, 10) << " | "
+            << prd(FlywheelMotor1.get_velocity_error(), 3, 10) << " | "
+            << prd(FlywheelMotor1.get_applied_voltage(), 3, 10) << " | "
+            << prd(FlywheelMotor1.get_estimator_voltage(), 3, 10) << " | "
+            << prd(FlywheelMotor1.get_p_voltage(), 3, 10) << "\n";
+    std::cout << LEncoder.get_value() << std::endl;
+    std::cout << REncoder.get_value() << std::endl;
+    std::cout << "-------------------" << std::endl;
     */
-
-    /*
-    std::cout << "totalDeltaL = " << totalDeltaL << std::endl;
-    // std::cout << "totalDeltaR = " << totalDeltaR << std::endl;
-    std::cout << "totalDeltaS = " << totalDeltaS << std::endl;
-    std::cout << "orientation = " << orientation << std::endl;
-    std::cout << "deltaTheta = " << deltaTheta << std::endl;
-    std::cout << "avgTheta = " << avgTheta << std::endl;
-    std::cout << "posX = " << posX << std::endl;
-    std::cout << "posY = " << posY << std::endl;
-    */
-
-    printf("%s | %s | %s | %s | %s | %s | %s | %s | \n",
-      prd(totalDeltaL,1,14).c_str(), prd(totalDeltaS,2,14).c_str(),
-      prd(IMU.get_heading(),0,14).c_str(), prd(radToDeg(orientation),2,14).c_str(),
-      prd(deltaTheta,2,14).c_str(), prd(avgTheta,2,14).c_str(), prd(posX,2,14).c_str(),
-      prd(posY,2,14).c_str());
-
-    sylib::delay(50);
+  
+  std::cout << FlywheelMotorSpeed << std::endl;
+  std::cout << FlywheelSpinning << std::endl;
+  std::cout << "---------------------" << std::endl;
+  pros::delay(100);
   }
 }

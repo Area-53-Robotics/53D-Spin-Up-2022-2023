@@ -1,6 +1,12 @@
-extern const double flyFactor;
-extern void ToggleFlywheel(int velocity);
+extern double flywheelVelocity;
+extern bool FlywheelSpinning;
+extern int FlywheelMotorSpeed;
+extern const double FlywheelRadius;
+extern const double SpeedConversionFactor;
+extern void FlywheelController();
 extern void ToggleFlywheelSpeed();
+extern void ToggleFlywheelStatus();
+extern void AutonFlywheel(int velocity);
 extern void AutoAim();
 extern void SkillsAutoAim();
 extern void FlySpeedInc100();

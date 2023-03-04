@@ -1,5 +1,4 @@
-#include "api.h"
-
+extern unsigned short int autonSelect;
 extern unsigned short int Page;
 extern unsigned short int Line;
 extern bool AutonSelecting;

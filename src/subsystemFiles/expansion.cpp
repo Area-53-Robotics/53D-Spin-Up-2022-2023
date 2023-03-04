@@ -1,8 +1,14 @@
 #include "main.h"
 #include "subsystemHeaders/expansion.hpp"
 
+/*
+    * Fires the pneumatic pistons on our
+    * expansion system and alerts the
+    * driver that the function was
+    * successful
+*/
 void Expansion() {
-    ExpansionPiston.set_value(true);
+    ExpansionPistons.set_value(true);
     Controller.rumble(".");
     sylib::delay(50);
     Controller.clear();

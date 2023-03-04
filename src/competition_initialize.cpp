@@ -1,6 +1,36 @@
 #include "main.h"
-#include "pros/motors.h"
-#include "sylib/pros_includes.h"
+
+/**
+ * Runs after initialize(), and before autonomous when connected to the Field
+ * Management System or the VEX Competition Switch. This is intended for
+ * competition-specific initialization routines, such as an autonomous selector
+ * on the LCD.
+ *
+ * This task will exit when the robot is enabled and autonomous or opcontrol
+ * starts.
+ */
+void competition_initialize() {
+	CIDisplay();
+	while (true) {
+		if(Controller.get_digital_new_press(DIGITAL_DOWN)) DownPressed();
+		if(Controller.get_digital_new_press(DIGITAL_UP)) UpPressed();
+		if(Controller.get_digital_new_press(DIGITAL_A)) APressed();
+		if(Controller.get_digital_new_press(DIGITAL_B)) BPressed();
+
+		sylib::delay(20);
+	}
+}
+
+/*
+    1: Left Quals
+    2: Right Quals
+    3: Left Elims
+    4: Right Elims
+    5: Full Autonomous Win Point
+    6: No Auton
+    7: Programming Skills
+*/
+inline unsigned short int autonSelect;
 
 inline unsigned short int Page = 1;
 inline unsigned short int Line = 1;
@@ -282,9 +312,9 @@ void MotorCheck() {
     } else if (Page == 2) {
         Controller.print(0,0,"FRM: %f °C", FRM.get_temperature());
         sylib::delay(50);
-        Controller.print(1, 0, "Intake: %f °C", IntakeMotor.get_temperature());
+        Controller.print(1, 0, "Intake1: %f °C", IntakeMotor.get_temperature());
         sylib::delay(50);
-        Controller.print(2, 0, "Indexer: %f °C", IndexerMotor.get_temperature());
+        Controller.print(2, 0, "Intake2: %f °C", IndexerMotor.get_temperature());
         sylib::delay(50);
     } else if (Page == 3) {
         Controller.print(0, 0, "FWM1: %f °C", FlywheelMotor1.get_temperature());
@@ -410,59 +440,14 @@ inline void APressed() {
         }
     } else if (GamePhase == 1 && AutonSelecting && !MotorChecking && !KeybindChecking && !NotesChecking) {
         switch (Line) {
-            case 1:
-                // Left Quals
-                autonSelect = 1;
-                posX = 16;
-                posY = 9;
-                IMU.set_heading(-90);
-                break;
-            case 2:
-                // Right Quals
-                autonSelect = 2;
-                posX = 135;
-                posY = 138;
-                IMU.set_heading(-180);
-                break;
-            case 3:
-                // Left Elims
-                autonSelect = 3;
-                posX = 16;
-                posY = 9;
-                IMU.set_heading(-90);
-                break;
-            case 4:
-                // Right Elims
-                autonSelect = 4;
-                posX = 135;
-                posY = 138;
-                IMU.set_heading(-180);
-                break;
-            case 5:
-                // Full Autonomous Win Point
-                autonSelect = 5;
-                posX = 135;
-                posY = 138;
-                IMU.set_heading(-180);
-                break;
-            case 6:
-                // No Auton
-                autonSelect = 6;
-                posX = 135;
-                posY = 138;
-                IMU.set_heading(-180);
-                break;
-            case 7:
-                // Programming Skills
-                autonSelect = 7;
-                posX = 16;
-                posY = 9;
-                IMU.set_heading(-90);
-                break;
+            case 1: autonSelect = 1; break;
+            case 2: autonSelect = 2; break;
+            case 3: autonSelect = 3; break;
+            case 4: autonSelect = 4; break;
+            case 5: autonSelect = 5; break;
+            case 6: autonSelect = 6; break;
+            case 7: autonSelect = 7; break;
         }
-        orientation = degToRad(360 - IMU.get_heading());
-        lastOrientation = orientation;
-        avgTheta = orientation + (deltaTheta / 2);
         AutonSelect();
     }
 }
@@ -487,25 +472,4 @@ inline void BPressed() {
             CIDisplay();
         }
     }
-}
-
-/**
- * Runs after initialize(), and before autonomous when connected to the Field
- * Management System or the VEX Competition Switch. This is intended for
- * competition-specific initialization routines, such as an autonomous selector
- * on the LCD.
- *
- * This task will exit when the robot is enabled and autonomous or opcontrol
- * starts.
- */
-void competition_initialize() {
-	CIDisplay();
-	while (true) {
-		if(Controller.get_digital_new_press(DIGITAL_DOWN)) DownPressed();
-		if(Controller.get_digital_new_press(DIGITAL_UP)) UpPressed();
-		if(Controller.get_digital_new_press(DIGITAL_A)) APressed();
-		if(Controller.get_digital_new_press(DIGITAL_B)) BPressed();
-
-		sylib::delay(20);
-	}
 }
